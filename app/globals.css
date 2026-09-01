@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #faf9f7;
+  --color-surface: #ffffff;
+  --color-ink: #16150f;
+  --color-muted: #736f65;
+  --color-hairline: #e7e3da;
+  --color-accent: #c2452c;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  background: var(--color-paper);
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-synthesis-weight: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Display type is set tighter than Inter's defaults, which run loose at size. */
+.display {
+  letter-spacing: -0.022em;
+}
+
+.focus-ring:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* iOS zooms any input rendered under 16px on focus; scale up instead. */
+@supports (-webkit-touch-callout: none) {
+  .ios-no-focus-zoom {
+    font-size: 16px;
+  }
+}
+
+/*
+ * Masonry: a CSS grid of short rows. Each <article> is given an explicit
+ * `grid-row-end: span N` from its measured height, so items pack tightly
+ * while keeping DOM order (a column-count layout reads down each column).
+ *
+ * The row unit is 4px rather than 1px on purpose: a 1px unit needs several
+ * thousand implicit tracks for a full gallery, which makes every style
+ * recalculation expensive. At 4px the packing is visually identical.
+ */
+.feed-grid {
+  display: grid;
+  grid-auto-rows: var(--feed-row, 4px);
+  column-gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .feed-grid {
+    column-gap: 20px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .feed-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1440px) {
+  .feed-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.card-enter {
+  animation: card-in 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

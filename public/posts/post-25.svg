@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+<rect x="0.0" y="0.0" width="1600.0" height="1000.0" rx="0.0" fill="#fdf1f3"/>
+<rect x="48.0" y="160.0" width="262.4" height="262.4" rx="26.2" fill="#ffffff" opacity="0.9"/>
+<circle cx="121.5" cy="291.2" r="26.2" fill="#d94167" opacity="0.35"/>
+<rect x="358.4" y="160.0" width="262.4" height="262.4" rx="26.2" fill="#ffffff" opacity="0.9"/>
+<circle cx="460.7" cy="291.2" r="43.3" fill="#d94167" opacity="0.5125"/>
+<rect x="668.8" y="160.0" width="262.4" height="262.4" rx="26.2" fill="#ffffff" opacity="0.9"/>
+<circle cx="800.0" cy="291.2" r="60.4" fill="#d94167" opacity="0.675"/>
+<rect x="979.2" y="160.0" width="262.4" height="262.4" rx="26.2" fill="#ffffff" opacity="0.9"/>
+<circle cx="1139.3" cy="291.2" r="77.4" fill="#d94167" opacity="0.8375"/>
+<rect x="1289.6" y="160.0" width="262.4" height="262.4" rx="26.2" fill="#ffffff" opacity="0.9"/>
+<circle cx="1478.5" cy="291.2" r="94.5" fill="#d94167"/>
+<rect x="160.0" y="880.0" width="1280.0" height="3.0" rx="0.0" fill="#f4d6dc" opacity="0.8"/>
+<path d="M160.0 880.0 C 608.0 880.0, 800.0 620.0, 1440.0 620.0" fill="none" stroke="#d94167" stroke-width="11.0" stroke-linecap="round"/>
+<circle cx="160.0" cy="880.0" r="16.0" fill="#d94167"/>
+<circle cx="1440.0" cy="620.0" r="16.0" fill="#d94167"/>
+</svg>
