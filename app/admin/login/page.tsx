@@ -5,7 +5,7 @@ import LoginForm from "@/components/admin/LoginForm";
 import Logo from "@/components/Logo";
 import { getAdminSession } from "@/lib/admin";
 
-export const metadata: Metadata = { title: "Desk sign in" };
+export const metadata: Metadata = { title: "Desk sign in", robots: { index: false, follow: false } };
 
 export default async function AdminLoginPage() {
   if (await getAdminSession()) redirect("/admin");
@@ -20,8 +20,8 @@ export default async function AdminLoginPage() {
         <div className="rounded-2xl border border-[#e7e3da] bg-white px-6 py-8 sm:px-8">
           <h1 className="display text-[26px] font-semibold">Desk</h1>
           <p className="mt-2 text-[14px] leading-relaxed text-[#736f65]">
-            Only the archive admin can sign in here. Public Join accounts cannot
-            publish to the gallery.
+            Sign in to publish, edit and remove pieces from the gallery. Only the
+            archive admin has an account here.
           </p>
           <div className="mt-7">
             <LoginForm />

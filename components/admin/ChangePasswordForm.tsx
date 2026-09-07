@@ -1,16 +1,19 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { changeAdminPassword, type PasswordState } from "@/app/admin/settings-actions";
 import { validatePasswordChange } from "@/lib/admin-validation";
-
-const FIELD =
-  "w-full rounded-xl border bg-white px-3.5 py-2.5 text-[15px] text-[#16150f] outline-none transition-colors placeholder:text-[#a8a396] focus:border-[#16150f]";
-const LABEL = "mb-1.5 block text-[13px] font-medium text-[#16150f]";
+import { BUTTON, FIELD, FIELD_ERROR, FieldError, FormAlert, HINT, LABEL } from "./form";
 
 export default function ChangePasswordForm() {
   const [state, formAction, pending] = useActionState(changeAdminPassword, {});
   const [local, setLocal] = useState<PasswordState["fields"]>({});
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // Never leave passwords sitting in the fields after a successful change.
+  useEffect(() => {
+    if (state.ok) formRef.current?.reset();
+  }, [state.ok]);
 
   const currentError = local?.current ?? state.fields?.current;
   const nextError = local?.next ?? state.fields?.next;
@@ -18,6 +21,7 @@ export default function ChangePasswordForm() {
 
   return (
     <form
+      ref={formRef}
       action={formAction}
       noValidate
       onSubmit={(e) => {
@@ -42,13 +46,11 @@ export default function ChangePasswordForm() {
           type="password"
           autoComplete="current-password"
           required
-          className={`${FIELD} ${currentError ? "border-[#c2452c]" : "border-[#e7e3da]"}`}
+          aria-invalid={currentError ? true : undefined}
+          aria-describedby={currentError ? "current-error" : undefined}
+          className={currentError ? FIELD_ERROR : FIELD}
         />
-        {currentError ? (
-          <p className="mt-1.5 text-[12px] text-[#c2452c]" role="alert">
-            {currentError}
-          </p>
-        ) : null}
+        <FieldError id="current-error" message={currentError} />
       </div>
       <div>
         <label className={LABEL} htmlFor="next">
@@ -61,15 +63,17 @@ export default function ChangePasswordForm() {
           autoComplete="new-password"
           required
           minLength={8}
-          className={`${FIELD} ${nextError ? "border-[#c2452c]" : "border-[#e7e3da]"}`}
+          maxLength={128}
+          aria-invalid={nextError ? true : undefined}
+          aria-describedby={nextError ? "next-error" : "next-hint"}
+          className={nextError ? FIELD_ERROR : FIELD}
         />
-        {nextError ? (
-          <p className="mt-1.5 text-[12px] text-[#c2452c]" role="alert">
-            {nextError}
+        <FieldError id="next-error" message={nextError} />
+        {!nextError ? (
+          <p id="next-hint" className={HINT}>
+            At least 8 characters, with a letter and a number.
           </p>
-        ) : (
-          <p className="mt-1.5 text-[12px] text-[#a8a396]">At least 8 characters, with a letter and a number.</p>
-        )}
+        ) : null}
       </div>
       <div>
         <label className={LABEL} htmlFor="confirm">
@@ -82,31 +86,18 @@ export default function ChangePasswordForm() {
           autoComplete="new-password"
           required
           minLength={8}
-          className={`${FIELD} ${confirmError ? "border-[#c2452c]" : "border-[#e7e3da]"}`}
+          maxLength={128}
+          aria-invalid={confirmError ? true : undefined}
+          aria-describedby={confirmError ? "confirm-error" : undefined}
+          className={confirmError ? FIELD_ERROR : FIELD}
         />
-        {confirmError ? (
-          <p className="mt-1.5 text-[12px] text-[#c2452c]" role="alert">
-            {confirmError}
-          </p>
-        ) : null}
+        <FieldError id="confirm-error" message={confirmError} />
       </div>
 
-      {state.error ? (
-        <p className="rounded-xl bg-[#f8ece8] px-3.5 py-2.5 text-[13px] text-[#c2452c]" role="alert">
-          {state.error}
-        </p>
-      ) : null}
-      {state.ok ? (
-        <p className="rounded-xl bg-[#eef6ea] px-3.5 py-2.5 text-[13px] text-[#2f5d28]" role="status">
-          {state.ok}
-        </p>
-      ) : null}
+      {state.error ? <FormAlert tone="error">{state.error}</FormAlert> : null}
+      {state.ok ? <FormAlert tone="ok">{state.ok}</FormAlert> : null}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="focus-ring inline-flex h-11 items-center justify-center rounded-full bg-[#16150f] px-5 text-[15px] font-medium text-white hover:opacity-85 disabled:opacity-50"
-      >
+      <button type="submit" disabled={pending} className={BUTTON}>
         {pending ? "Updating…" : "Update password"}
       </button>
     </form>

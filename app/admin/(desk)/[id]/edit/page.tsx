@@ -29,12 +29,20 @@ export default async function EditPiecePage({ params }: Props) {
         Edit
       </p>
       <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <h1 className="display text-[28px] font-semibold leading-tight sm:text-[34px]">
-          {piece.title}
-        </h1>
+        <div>
+          <h1 className="display text-[28px] font-semibold leading-tight sm:text-[34px]">
+            {piece.title}
+          </h1>
+          <p className="mt-2 text-[14px] text-[#736f65]">
+            Live at{" "}
+            <Link href={`/posts/${piece.id}`} className="focus-ring font-mono text-[13px] text-[#16150f] underline decoration-[#d5cfc2] underline-offset-4">
+              /posts/{piece.id}
+            </Link>
+          </p>
+        </div>
         <form action={deletePiece}>
           <input type="hidden" name="id" value={piece.id} />
-          <DeletePieceButton />
+          <DeletePieceButton title={piece.title} />
         </form>
       </div>
       <div className="mt-8">

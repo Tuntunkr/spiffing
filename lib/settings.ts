@@ -1,19 +1,16 @@
-import { promises as fs } from "node:fs";
-import path from "node:path";
-import { head, put } from "@vercel/blob";
-import { blobEnabled } from "./catalog";
+import { cache } from "react";
+import { readJson, writeJson } from "./store";
 
 export type AdminSettings = {
   showSeed: boolean;
   passwordHash?: string;
 };
 
-const SETTINGS_PATH = path.join(process.cwd(), "data", "settings.json");
-const SETTINGS_BLOB = "catalog/settings.json";
+const SETTINGS_FILE = "settings.json";
 
 export const DEFAULT_SETTINGS: AdminSettings = { showSeed: false };
 
-function parseSettings(raw: unknown): AdminSettings {
+export function parseSettings(raw: unknown): AdminSettings {
   if (!raw || typeof raw !== "object") return { ...DEFAULT_SETTINGS };
   const data = raw as Partial<AdminSettings>;
   return {
@@ -22,49 +19,11 @@ function parseSettings(raw: unknown): AdminSettings {
   };
 }
 
-async function readLocal(): Promise<AdminSettings> {
-  try {
-    const raw = JSON.parse(await fs.readFile(SETTINGS_PATH, "utf8")) as unknown;
-    return parseSettings(raw);
-  } catch {
-    return { ...DEFAULT_SETTINGS };
-  }
-}
-
-async function writeLocal(settings: AdminSettings): Promise<void> {
-  await fs.mkdir(path.dirname(SETTINGS_PATH), { recursive: true });
-  await fs.writeFile(SETTINGS_PATH, `${JSON.stringify(settings, null, 2)}\n`, "utf8");
-}
-
-async function readBlob(): Promise<AdminSettings> {
-  try {
-    const meta = await head(SETTINGS_BLOB);
-    const res = await fetch(meta.url, { cache: "no-store" });
-    if (!res.ok) return { ...DEFAULT_SETTINGS };
-    return parseSettings(await res.json());
-  } catch {
-    return { ...DEFAULT_SETTINGS };
-  }
-}
-
-async function writeBlob(settings: AdminSettings): Promise<void> {
-  await put(SETTINGS_BLOB, JSON.stringify(settings), {
-    access: "public",
-    addRandomSuffix: false,
-    allowOverwrite: true,
-    contentType: "application/json",
-    cacheControlMaxAge: 0,
-  });
-}
-
-export async function getSettings(): Promise<AdminSettings> {
-  return blobEnabled ? readBlob() : readLocal();
-}
+/** Deduped per render pass: the session check and the gallery both ask for this. */
+export const getSettings = cache(async (): Promise<AdminSettings> => {
+  return parseSettings(await readJson<unknown>(SETTINGS_FILE, DEFAULT_SETTINGS));
+});
 
 export async function saveSettings(settings: AdminSettings): Promise<void> {
-  if (blobEnabled) {
-    await writeBlob(settings);
-    return;
-  }
-  await writeLocal(settings);
+  await writeJson(SETTINGS_FILE, settings);
 }

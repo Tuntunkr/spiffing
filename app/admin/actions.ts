@@ -4,10 +4,11 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/admin";
 import { getCatalogPost, getCatalogPosts, saveCatalogPosts } from "@/lib/catalog";
+import { pieceFromFields, uniqueId, type PieceErrors, type PieceFields } from "@/lib/piece";
 import { removeUpload, saveUpload } from "@/lib/uploads";
-import { CATEGORIES, type Category, type Post } from "@/lib/types";
+import type { Post } from "@/lib/types";
 
-export type ActionState = { error?: string };
+export type ActionState = { error?: string; fields?: PieceErrors };
 
 const DEFAULT_AVATAR = "/creators/creator-1.svg";
 
@@ -18,117 +19,84 @@ function refreshGallery(id?: string) {
   if (id) revalidatePath(`/posts/${id}`);
 }
 
-function slugify(title: string): string {
-  return (
-    title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "")
-      .slice(0, 72) || "piece"
-  );
-}
-
-function uniqueId(title: string, taken: Set<string>): string {
-  const base = slugify(title);
-  if (!taken.has(base)) return base;
-  let n = 2;
-  while (taken.has(`${base}-${n}`)) n += 1;
-  return `${base}-${n}`;
-}
-
 function readText(formData: FormData, key: string): string {
   const value = formData.get(key);
   return typeof value === "string" ? value.trim() : "";
 }
 
-function readInt(formData: FormData, key: string, fallback: number): number {
-  const n = Number.parseInt(readText(formData, key), 10);
-  return Number.isFinite(n) ? n : fallback;
-}
-
-function parseCategory(value: string): Category | null {
-  return (CATEGORIES as readonly string[]).includes(value) ? (value as Category) : null;
-}
-
-function pieceFromForm(
-  formData: FormData,
-  id: string,
-  media: Post["media"],
-  avatar: string,
-  publishedAt: string,
-): { piece: Post } | ActionState {
-  const title = readText(formData, "title");
-  const description = readText(formData, "description");
-  const category = parseCategory(readText(formData, "category"));
-  const handle = readText(formData, "handle").replace(/^@/, "");
-  const sourceUrl = readText(formData, "sourceUrl") || "https://example.com/";
-  const slides = Math.max(1, readInt(formData, "slides", 1));
-  const featured = formData.get("featured") === "on";
-
-  if (!title) return { error: "Title is required." };
-  if (!description) return { error: "Description is required." };
-  if (description.length > 300) return { error: "Description must be 300 characters or fewer." };
-  if (!category) return { error: "Pick a category the gallery already understands." };
-  if (!handle) return { error: "Designer handle is required." };
-
+function readFields(formData: FormData): PieceFields {
   return {
-    piece: {
-      id,
-      title,
-      description,
-      category,
-      creator: { handle, avatar },
-      media,
-      slides,
-      sourceUrl,
-      featured,
-      publishedAt,
-    },
+    title: readText(formData, "title"),
+    description: readText(formData, "description"),
+    category: readText(formData, "category"),
+    handle: readText(formData, "handle"),
+    sourceUrl: readText(formData, "sourceUrl"),
+    slides: readText(formData, "slides"),
+    featured: formData.get("featured") === "on",
   };
+}
+
+function fileOrNull(formData: FormData, key: string): File | null {
+  const value = formData.get(key);
+  return value instanceof File && value.size > 0 ? value : null;
+}
+
+function message(error: unknown, fallback: string): string {
+  return error instanceof Error ? error.message : fallback;
 }
 
 export async function createPiece(_prev: ActionState, formData: FormData): Promise<ActionState> {
   await requireAdmin();
 
-  const artwork = formData.get("artwork");
-  if (!(artwork instanceof File) || artwork.size === 0) {
-    return { error: "Upload the artwork so the card can size itself." };
+  const fields = readFields(formData);
+  const artwork = fileOrNull(formData, "artwork");
+  const avatarFile = fileOrNull(formData, "avatar");
+
+  // Validate text before touching storage so a typo does not leave orphan files.
+  const parsed = pieceFromFields(fields);
+  if (!parsed.ok) {
+    return { fields: artwork ? parsed.fields : { ...parsed.fields, artwork: "Upload the artwork." } };
   }
+  if (!artwork) return { fields: { artwork: "Upload the artwork so the card can size itself." } };
 
   const catalog = await getCatalogPosts();
-  const id = uniqueId(readText(formData, "title"), new Set(catalog.map((p) => p.id)));
+  const id = uniqueId(fields.title, new Set(catalog.map((p) => p.id)));
 
-  let src: string;
+  let media: Post["media"];
   try {
-    src = await saveUpload(artwork, id);
+    media = await saveUpload(artwork, id);
   } catch (error) {
-    return { error: error instanceof Error ? error.message : "Could not save the artwork." };
+    return { fields: { artwork: message(error, "Could not save the artwork.") } };
   }
 
-  const width = Math.max(1, readInt(formData, "width", 1600));
-  const height = Math.max(1, readInt(formData, "height", 1200));
-
   let avatar = DEFAULT_AVATAR;
-  const avatarFile = formData.get("avatar");
-  if (avatarFile instanceof File && avatarFile.size > 0) {
+  if (avatarFile) {
     try {
-      avatar = await saveUpload(avatarFile, `${id}-avatar`);
+      avatar = (await saveUpload(avatarFile, `${id}-avatar`)).src;
     } catch (error) {
-      await removeUpload(src);
-      return { error: error instanceof Error ? error.message : "Could not save the avatar." };
+      await removeUpload(media.src);
+      return { fields: { avatar: message(error, "Could not save the avatar.") } };
     }
   }
 
-  const result = pieceFromForm(formData, id, { src, width, height }, avatar, new Date().toISOString());
-  if (!("piece" in result)) {
-    await removeUpload(src);
+  const piece: Post = {
+    id,
+    ...parsed.value,
+    creator: { handle: parsed.value.handle, avatar },
+    media,
+    publishedAt: new Date().toISOString(),
+  };
+
+  try {
+    await saveCatalogPosts([piece, ...catalog]);
+  } catch (error) {
+    await removeUpload(media.src);
     if (avatar !== DEFAULT_AVATAR) await removeUpload(avatar);
-    return result;
+    return { error: message(error, "Could not write the catalog.") };
   }
 
-  await saveCatalogPosts([result.piece, ...catalog]);
   refreshGallery(id);
-  redirect("/admin");
+  redirect(`/admin?published=${encodeURIComponent(id)}`);
 }
 
 export async function updatePiece(_prev: ActionState, formData: FormData): Promise<ActionState> {
@@ -138,53 +106,59 @@ export async function updatePiece(_prev: ActionState, formData: FormData): Promi
   const existing = await getCatalogPost(id);
   if (!existing) return { error: "That piece is not in the admin catalog." };
 
+  const parsed = pieceFromFields(readFields(formData));
+  if (!parsed.ok) return { fields: parsed.fields };
+
   let media = existing.media;
-  const artwork = formData.get("artwork");
-  if (artwork instanceof File && artwork.size > 0) {
+  const artwork = fileOrNull(formData, "artwork");
+  if (artwork) {
     try {
-      const src = await saveUpload(artwork, id);
-      await removeUpload(existing.media.src);
-      media = {
-        src,
-        width: Math.max(1, readInt(formData, "width", existing.media.width)),
-        height: Math.max(1, readInt(formData, "height", existing.media.height)),
-      };
+      media = await saveUpload(artwork, id);
     } catch (error) {
-      return { error: error instanceof Error ? error.message : "Could not save the artwork." };
+      return { fields: { artwork: message(error, "Could not save the artwork.") } };
     }
   }
 
   let avatar = existing.creator.avatar;
-  const avatarFile = formData.get("avatar");
-  if (avatarFile instanceof File && avatarFile.size > 0) {
+  const avatarFile = fileOrNull(formData, "avatar");
+  if (avatarFile) {
     try {
-      const next = await saveUpload(avatarFile, `${id}-avatar`);
-      await removeUpload(existing.creator.avatar);
-      avatar = next;
+      avatar = (await saveUpload(avatarFile, `${id}-avatar`)).src;
     } catch (error) {
-      return { error: error instanceof Error ? error.message : "Could not save the avatar." };
+      if (media.src !== existing.media.src) await removeUpload(media.src);
+      return { fields: { avatar: message(error, "Could not save the avatar.") } };
     }
   }
 
-  const result = pieceFromForm(formData, id, media, avatar, existing.publishedAt);
-  if (!("piece" in result)) return result;
+  const piece: Post = {
+    id,
+    ...parsed.value,
+    creator: { handle: parsed.value.handle, avatar },
+    media,
+    publishedAt: existing.publishedAt,
+  };
 
   const catalog = await getCatalogPosts();
-  await saveCatalogPosts(catalog.map((p) => (p.id === id ? result.piece : p)));
+  await saveCatalogPosts(catalog.map((p) => (p.id === id ? piece : p)));
+
+  // Old files go only after the catalog points at the new ones.
+  if (media.src !== existing.media.src) await removeUpload(existing.media.src);
+  if (avatar !== existing.creator.avatar) await removeUpload(existing.creator.avatar);
+
   refreshGallery(id);
-  redirect("/admin");
+  redirect(`/admin?updated=${encodeURIComponent(id)}`);
 }
 
 export async function deletePiece(formData: FormData): Promise<void> {
   await requireAdmin();
   const id = readText(formData, "id");
   const existing = await getCatalogPost(id);
-  if (!existing) return;
+  if (!existing) redirect("/admin");
 
-  await removeUpload(existing.media.src);
-  await removeUpload(existing.creator.avatar);
   const catalog = await getCatalogPosts();
   await saveCatalogPosts(catalog.filter((p) => p.id !== id));
+  await removeUpload(existing.media.src);
+  await removeUpload(existing.creator.avatar);
   refreshGallery(id);
-  redirect("/admin");
+  redirect("/admin?removed=1");
 }

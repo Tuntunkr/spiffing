@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { updateSeedVisibility } from "@/app/admin/settings-actions";
+import { BUTTON, FormAlert } from "./form";
 
 export default function SeedToggleForm({ showSeed }: { showSeed: boolean }) {
   const [state, formAction, pending] = useActionState(updateSeedVisibility, {});
@@ -22,21 +23,9 @@ export default function SeedToggleForm({ showSeed }: { showSeed: boolean }) {
           </span>
         </span>
       </label>
-      {state.error ? (
-        <p className="rounded-xl bg-[#f8ece8] px-3.5 py-2.5 text-[13px] text-[#c2452c]" role="alert">
-          {state.error}
-        </p>
-      ) : null}
-      {state.ok ? (
-        <p className="rounded-xl bg-[#eef6ea] px-3.5 py-2.5 text-[13px] text-[#2f5d28]" role="status">
-          {state.ok}
-        </p>
-      ) : null}
-      <button
-        type="submit"
-        disabled={pending}
-        className="focus-ring inline-flex h-11 items-center justify-center rounded-full bg-[#16150f] px-5 text-[15px] font-medium text-white hover:opacity-85 disabled:opacity-50"
-      >
+      {state.error ? <FormAlert tone="error">{state.error}</FormAlert> : null}
+      {state.ok ? <FormAlert tone="ok">{state.ok}</FormAlert> : null}
+      <button type="submit" disabled={pending} className={BUTTON}>
         {pending ? "Saving…" : "Save shelf"}
       </button>
     </form>

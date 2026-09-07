@@ -1,11 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import {
-  hashPassword,
-  requireAdmin,
-  verifyCredentials,
-} from "@/lib/admin";
+import { hashPassword, requireAdmin, setAdminSession, verifyCredentials } from "@/lib/admin";
 import { validatePasswordChange } from "@/lib/admin-validation";
 import { getSettings, saveSettings } from "@/lib/settings";
 
@@ -33,11 +29,11 @@ export async function changeAdminPassword(
   }
 
   const settings = await getSettings();
-  await saveSettings({
-    ...settings,
-    passwordHash: await hashPassword(next),
-  });
-  return { ok: "Password updated. Use the new one the next time you sign in." };
+  const passwordHash = await hashPassword(next);
+  await saveSettings({ ...settings, passwordHash });
+  // Every other device is signed out by the version bump; keep this one in.
+  await setAdminSession(session.email, passwordHash);
+  return { ok: "Password updated. Other signed-in devices have been signed out." };
 }
 
 export async function updateSeedVisibility(

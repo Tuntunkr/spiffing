@@ -3,14 +3,12 @@
 import { useActionState, useState } from "react";
 import { loginAdmin, type LoginState } from "@/app/admin/auth-actions";
 import { EMAIL_RE, validateLoginFields } from "@/lib/admin-validation";
-
-const FIELD =
-  "w-full rounded-xl border bg-white px-3.5 py-2.5 text-[15px] text-[#16150f] outline-none transition-colors placeholder:text-[#a8a396] focus:border-[#16150f]";
-const LABEL = "mb-1.5 block text-[13px] font-medium text-[#16150f]";
+import { BUTTON, FIELD, FIELD_ERROR, FieldError, FormAlert, LABEL } from "./form";
 
 export default function LoginForm() {
   const [state, formAction, pending] = useActionState(loginAdmin, {});
   const [local, setLocal] = useState<LoginState["fields"]>({});
+  const [showPassword, setShowPassword] = useState(false);
 
   const emailError = local?.email ?? state.fields?.email;
   const passwordError = local?.password ?? state.fields?.password;
@@ -39,51 +37,58 @@ export default function LoginForm() {
           name="email"
           type="email"
           autoComplete="username"
+          autoFocus
+          defaultValue={state.email}
           required
           inputMode="email"
           pattern={EMAIL_RE.source}
-          className={`${FIELD} ${emailError ? "border-[#c2452c]" : "border-[#e7e3da]"}`}
+          aria-invalid={emailError ? true : undefined}
+          aria-describedby={emailError ? "email-error" : undefined}
+          className={emailError ? FIELD_ERROR : FIELD}
         />
-        {emailError ? (
-          <p className="mt-1.5 text-[12px] text-[#c2452c]" role="alert">
-            {emailError}
-          </p>
-        ) : null}
+        <FieldError id="email-error" message={emailError} />
       </div>
 
       <div>
-        <label className={LABEL} htmlFor="password">
-          Password
-        </label>
+        <div className="mb-1.5 flex items-center justify-between">
+          <label className="block text-[13px] font-medium text-[#16150f]" htmlFor="password">
+            Password
+          </label>
+          <button
+            type="button"
+            onClick={() => setShowPassword((v) => !v)}
+            aria-pressed={showPassword}
+            className="focus-ring text-[12px] text-[#736f65] hover:text-[#16150f]"
+          >
+            {showPassword ? "Hide" : "Show"}
+          </button>
+        </div>
         <input
           id="password"
           name="password"
-          type="password"
+          type={showPassword ? "text" : "password"}
           autoComplete="current-password"
           required
           minLength={8}
           maxLength={128}
-          className={`${FIELD} ${passwordError ? "border-[#c2452c]" : "border-[#e7e3da]"}`}
+          aria-invalid={passwordError ? true : undefined}
+          aria-describedby={passwordError ? "password-error" : undefined}
+          className={passwordError ? FIELD_ERROR : FIELD}
         />
-        {passwordError ? (
-          <p className="mt-1.5 text-[12px] text-[#c2452c]" role="alert">
-            {passwordError}
-          </p>
-        ) : null}
+        <FieldError id="password-error" message={passwordError} />
       </div>
 
-      {state.error ? (
-        <p className="rounded-xl bg-[#f8ece8] px-3.5 py-2.5 text-[13px] text-[#c2452c]" role="alert">
-          {state.error}
-        </p>
-      ) : null}
+      {state.error ? <FormAlert tone="error">{state.error}</FormAlert> : null}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="focus-ring inline-flex h-11 w-full items-center justify-center rounded-full bg-[#16150f] text-[15px] font-medium text-white transition-opacity hover:opacity-85 disabled:opacity-50"
-      >
-        {pending ? "Signing in…" : "Sign in to the desk"}
+      <button type="submit" disabled={pending} className={`${BUTTON} w-full`}>
+        {pending ? (
+          <>
+            <span aria-hidden="true" className="size-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+            Signing in…
+          </>
+        ) : (
+          "Sign in to the desk"
+        )}
       </button>
     </form>
   );

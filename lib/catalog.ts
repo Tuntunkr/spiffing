@@ -1,52 +1,40 @@
-import { promises as fs } from "node:fs";
-import path from "node:path";
-import { head, put } from "@vercel/blob";
-import type { Post } from "./types";
+import { readJson, writeJson } from "./store";
+import { CATEGORIES, type Post } from "./types";
 
-const CATALOG_PATH = path.join(process.cwd(), "data", "catalog.json");
-const CATALOG_BLOB = "catalog/catalog.json";
+export { blobEnabled } from "./store";
 
-export const blobEnabled = Boolean(process.env.BLOB_READ_WRITE_TOKEN);
+const CATALOG_FILE = "catalog.json";
 
-async function readLocalCatalog(): Promise<Post[]> {
-  try {
-    const raw = await fs.readFile(CATALOG_PATH, "utf8");
-    const parsed = JSON.parse(raw) as unknown;
-    return Array.isArray(parsed) ? (parsed as Post[]) : [];
-  } catch {
-    return [];
-  }
+function isPost(value: unknown): value is Post {
+  if (!value || typeof value !== "object") return false;
+  const p = value as Partial<Post>;
+  return (
+    typeof p.id === "string" &&
+    typeof p.title === "string" &&
+    typeof p.description === "string" &&
+    (CATEGORIES as readonly string[]).includes(p.category ?? "") &&
+    typeof p.creator?.handle === "string" &&
+    typeof p.creator?.avatar === "string" &&
+    typeof p.media?.src === "string" &&
+    typeof p.media?.width === "number" &&
+    typeof p.media?.height === "number" &&
+    typeof p.publishedAt === "string"
+  );
 }
 
-async function writeLocalCatalog(posts: Post[]): Promise<void> {
-  await fs.mkdir(path.dirname(CATALOG_PATH), { recursive: true });
-  await fs.writeFile(CATALOG_PATH, `${JSON.stringify(posts, null, 2)}\n`, "utf8");
-}
-
-async function readBlobCatalog(): Promise<Post[]> {
-  try {
-    const meta = await head(CATALOG_BLOB);
-    const res = await fetch(meta.url, { cache: "no-store" });
-    if (!res.ok) return [];
-    const parsed = (await res.json()) as unknown;
-    return Array.isArray(parsed) ? (parsed as Post[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-async function writeBlobCatalog(posts: Post[]): Promise<void> {
-  await put(CATALOG_BLOB, JSON.stringify(posts), {
-    access: "public",
-    addRandomSuffix: false,
-    allowOverwrite: true,
-    contentType: "application/json",
-    cacheControlMaxAge: 0,
-  });
+/** Drops anything malformed so one bad row cannot take the gallery down. */
+export function parseCatalog(raw: unknown): Post[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.filter(isPost).map((p) => ({
+    ...p,
+    slides: typeof p.slides === "number" && p.slides > 0 ? Math.floor(p.slides) : 1,
+    sourceUrl: typeof p.sourceUrl === "string" ? p.sourceUrl : "",
+    featured: p.featured === true,
+  }));
 }
 
 export async function getCatalogPosts(): Promise<Post[]> {
-  return blobEnabled ? readBlobCatalog() : readLocalCatalog();
+  return parseCatalog(await readJson<unknown>(CATALOG_FILE, []));
 }
 
 export async function getCatalogPost(id: string): Promise<Post | undefined> {
@@ -54,11 +42,7 @@ export async function getCatalogPost(id: string): Promise<Post | undefined> {
 }
 
 export async function saveCatalogPosts(posts: Post[]): Promise<void> {
-  if (blobEnabled) {
-    await writeBlobCatalog(posts);
-    return;
-  }
-  await writeLocalCatalog(posts);
+  await writeJson(CATALOG_FILE, posts);
 }
 
 export function mergePosts(uploaded: Post[], rest: Post[]): Post[] {

@@ -1,14 +1,8 @@
 import Link from "next/link";
 import Logo from "./Logo";
 import { CATEGORIES } from "@/lib/types";
+import { galleryHref } from "@/lib/gallery-url";
 import { getAllPosts } from "@/lib/posts";
-
-const ELSEWHERE = [
-  { label: "X", href: "https://x.com" },
-  { label: "Instagram", href: "https://instagram.com" },
-  { label: "Are.na", href: "https://are.na" },
-  { label: "RSS", href: "/feed.xml" },
-];
 
 const LINK =
   "focus-ring text-[14px] text-[#736f65] transition-colors hover:text-[#16150f]";
@@ -24,6 +18,7 @@ function Column({ title, children }: { title: string; children: React.ReactNode 
 
 export default async function Footer() {
   const posts = await getAllPosts();
+  const latest = posts.map((p) => p.publishedAt).sort().at(-1);
   const year = new Date().getUTCFullYear();
   // Split the categories so the column does not run longer than its neighbours.
   const half = Math.ceil(CATEGORIES.length / 2);
@@ -47,7 +42,19 @@ export default async function Footer() {
             </p>
             <p className="mt-5 flex items-center gap-2 text-[13px] text-[#a8a396]">
               <span aria-hidden="true" className="size-[6px] rounded-full bg-[#c2452c]" />
-              {posts.length} pieces · updated hourly
+              <span className="tabular-nums">{posts.length}</span> pieces
+              {latest ? (
+                <>
+                  {" · last added "}
+                  <time dateTime={latest}>
+                    {new Date(latest).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "short",
+                      timeZone: "UTC",
+                    })}
+                  </time>
+                </>
+              ) : null}
             </p>
           </div>
 
@@ -59,7 +66,7 @@ export default async function Footer() {
             </li>
             {CATEGORIES.slice(0, half).map((c) => (
               <li key={c}>
-                <Link href={`/?category=${encodeURIComponent(c)}`} className={LINK}>
+                <Link href={galleryHref({ category: c })} className={LINK}>
                   {c}
                 </Link>
               </li>
@@ -69,39 +76,40 @@ export default async function Footer() {
           <Column title="More">
             {CATEGORIES.slice(half).map((c) => (
               <li key={c}>
-                <Link href={`/?category=${encodeURIComponent(c)}`} className={LINK}>
+                <Link href={galleryHref({ category: c })} className={LINK}>
                   {c}
                 </Link>
               </li>
             ))}
             <li>
-              <Link href="/?sort=Featured" className={LINK}>
+              <Link href={galleryHref({ sort: "Featured" })} className={LINK}>
                 Featured
               </Link>
             </li>
           </Column>
 
-          <Column title="Elsewhere">
-            {ELSEWHERE.map(({ label, href }) => (
-              <li key={label}>
-                <a
-                  href={href}
-                  target={href.startsWith("http") ? "_blank" : undefined}
-                  rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
-                  className={LINK}
-                >
-                  {label}
-                </a>
-              </li>
-            ))}
+          <Column title="Follow">
+            <li>
+              <a href="/feed.xml" className={LINK} type="application/rss+xml">
+                RSS feed
+              </a>
+            </li>
+            <li>
+              <Link href="/sitemap.xml" className={LINK}>
+                Sitemap
+              </Link>
+            </li>
+            <li>
+              <Link href="/admin" className={LINK}>
+                Desk sign in
+              </Link>
+            </li>
           </Column>
         </div>
 
         <div className="mt-14 flex flex-col gap-3 border-t border-[#e7e3da] pt-6 text-[13px] text-[#a8a396] sm:flex-row sm:items-center sm:justify-between">
           <p>© {year} Vitrine</p>
-          <p className="sm:text-right">
-            Set in Inter · Built with Next.js · Artwork generated for this archive
-          </p>
+          <p className="sm:text-right">Set in Inter · Built with Next.js · Artwork generated for this archive</p>
         </div>
       </div>
     </footer>

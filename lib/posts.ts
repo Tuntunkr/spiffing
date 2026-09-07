@@ -29,23 +29,40 @@ export const getAllPosts = cache(async (): Promise<Post[]> => {
   return settings.showSeed ? mergePosts(uploaded, SEED_POSTS) : uploaded;
 });
 
-export async function getPosts(
-  category?: string | null,
-  sort: Sort = "Latest",
-): Promise<Post[]> {
-  const all = await getAllPosts();
-  const list =
-    category && category !== "All"
-      ? all.filter((p) => p.category === category)
-      : all;
+/**
+ * Plain-text search over title, description, designer and category. Every
+ * word has to match somewhere, so "ledger pricing" narrows rather than widens.
+ */
+export function searchPosts(posts: Post[], q: string): Post[] {
+  const terms = q.toLowerCase().split(/\s+/).filter(Boolean);
+  if (terms.length === 0) return posts;
+  return posts.filter((p) => {
+    const haystack = `${p.title} ${p.description} ${p.creator.handle} ${p.category}`.toLowerCase();
+    return terms.every((t) => haystack.includes(t));
+  });
+}
 
+export function sortPosts(posts: Post[], sort: Sort): Post[] {
   return sort === "Featured"
-    ? [...list].sort(
+    ? [...posts].sort(
         (a, b) =>
           Number(b.featured) - Number(a.featured) ||
           b.publishedAt.localeCompare(a.publishedAt),
       )
-    : [...list].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
+    : [...posts].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
+}
+
+export async function getPosts(
+  category?: string | null,
+  sort: Sort = "Latest",
+  q = "",
+): Promise<Post[]> {
+  const all = await getAllPosts();
+  const inCategory =
+    category && category !== "All"
+      ? all.filter((p) => p.category === category)
+      : all;
+  return sortPosts(searchPosts(inCategory, q), sort);
 }
 
 export async function getPost(id: string): Promise<Post | undefined> {
@@ -62,9 +79,15 @@ export async function getNeighbours(id: string) {
   };
 }
 
+/** Same category, newest first, never the piece itself. */
+export async function getRelated(post: Post, limit = 3): Promise<Post[]> {
+  const all = await getPosts(post.category);
+  return all.filter((p) => p.id !== post.id).slice(0, limit);
+}
+
 /** One pass over the gallery for every chip's count, including "All". */
-export async function getCounts(): Promise<Record<string, number>> {
-  const all = await getAllPosts();
+export async function getCounts(q = ""): Promise<Record<string, number>> {
+  const all = searchPosts(await getAllPosts(), q);
   const counts: Record<string, number> = { All: all.length };
   for (const c of CATEGORIES) counts[c] = 0;
   for (const p of all) {

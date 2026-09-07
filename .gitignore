@@ -10,6 +10,7 @@ public/uploads/*
 !public/uploads/.gitkeep
 # Local-dev catalog and desk settings (Vercel Blob is used when deployed).
 data/*.json
+data/uploads/
 # Test artifacts
 coverage
 playwright-report

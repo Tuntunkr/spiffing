@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CATEGORIES } from "@/lib/types";
+import { galleryHref, type GalleryQuery } from "@/lib/gallery-url";
 import { getCounts } from "@/lib/posts";
 import SortDropdown from "./SortDropdown";
 
@@ -9,20 +10,10 @@ const ACTIVE = "bg-[#16150f] text-white";
 const IDLE =
   "border border-[#e7e3da] bg-white text-[#736f65] hover:border-[#d5cfc2] hover:text-[#16150f]";
 
-type Props = { active: string; sort: string };
+export default async function FilterBar({ query }: { query: GalleryQuery }) {
+  const counts = await getCounts(query.q);
 
-export default async function FilterBar({ active, sort }: Props) {
-  const counts = await getCounts();
-
-  const href = (category?: string) => {
-    const params = new URLSearchParams();
-    if (category) params.set("category", category);
-    if (sort !== "Latest") params.set("sort", sort);
-    const qs = params.toString();
-    return qs ? `/?${qs}` : "/";
-  };
-
-  const chips = [{ label: "All", value: undefined as string | undefined }].concat(
+  const chips = [{ label: "All", value: "All" }].concat(
     CATEGORIES.map((c) => ({ label: c, value: c })),
   );
 
@@ -34,11 +25,11 @@ export default async function FilterBar({ active, sort }: Props) {
       >
         <div className="flex w-max items-center gap-2">
           {chips.map(({ label, value }) => {
-            const isActive = active === label;
+            const isActive = query.category === value;
             return (
               <Link
                 key={label}
-                href={href(value)}
+                href={galleryHref({ ...query, category: value })}
                 aria-current={isActive ? "page" : undefined}
                 className={`${CHIP} ${isActive ? ACTIVE : IDLE}`}
               >
@@ -53,7 +44,7 @@ export default async function FilterBar({ active, sort }: Props) {
           })}
         </div>
       </nav>
-      <SortDropdown active={active} sort={sort} />
+      <SortDropdown query={query} />
     </div>
   );
 }
