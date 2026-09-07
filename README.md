@@ -90,18 +90,20 @@ production.
 
 ## Deploying to Vercel
 
-No required environment variables, so it deploys as-is:
+The gallery still builds without extra services (seed artwork). To **publish from
+`/admin` on the live site**, the project needs a linked Blob store so uploads
+survive serverless deploys:
 
-```bash
-npx vercel        # preview
-npx vercel --prod
-```
+1. `vercel link` the directory to the Vercel project.
+2. `vercel blob create-store vitrine --access public --yes` (once).
+3. Set `ADMIN_EMAIL`, `ADMIN_PASSWORD`, and `ADMIN_SESSION_SECRET` on the project
+   (`vercel env add`, all environments).
+4. `vercel env pull .env.local --yes` locally so `BLOB_READ_WRITE_TOKEN` is present.
+5. `vercel --prod`
 
-It deploys with no environment variables at all (serving the seed gallery). Add the
-Sanity variables whenever you want to start publishing from the CMS.
-
-Or push to a Git repo and import it at vercel.com — the framework preset is detected
-automatically.
+Without Blob, `/admin` still writes to disk (fine on your machine, gone after each
+Vercel deploy). Sanity remains optional: set the `NEXT_PUBLIC_SANITY_*` variables
+if you also want `/studio`.
 
 ## Layout notes
 

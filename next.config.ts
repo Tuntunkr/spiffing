@@ -6,7 +6,11 @@ const nextConfig: NextConfig = {
   turbopack: { root: path.join(__dirname) },
   images: {
     // Seed artwork ships in /public; CMS artwork is served by Sanity's CDN.
-    remotePatterns: [{ protocol: "https", hostname: "cdn.sanity.io" }],
+    remotePatterns: [
+      { protocol: "https", hostname: "cdn.sanity.io" },
+      { protocol: "https", hostname: "*.public.blob.vercel-storage.com" },
+      { protocol: "https", hostname: "*.blob.vercel-storage.com" },
+    ],
   },
 };
 

@@ -1,28 +1,32 @@
 import { cache } from "react";
 import { sanityFetch } from "./sanity/client";
 import { ALL_POSTS_QUERY } from "./sanity/queries";
+import { getCatalogPosts, mergePosts } from "./catalog";
+import { getSettings } from "./settings";
 import { SEED_POSTS } from "./seed";
 import { sanityEnabled } from "@/sanity/env";
 import { CATEGORIES, type Post, type Sort } from "./types";
 
 /**
- * The single read for the whole gallery. Sanity when it is configured and has
- * content, the shipped seed gallery otherwise — so the site works on a fresh
- * clone and never renders empty because a CMS is unreachable.
+ * The single read for the whole gallery. Admin uploads sit in front; then
+ * Sanity when it is configured and has content; the shipped seed gallery
+ * only if the desk still has “show seed” on.
  *
  * Wrapped in `cache` so one render pass fetches once, however many components
  * ask for the data.
  */
 export const getAllPosts = cache(async (): Promise<Post[]> => {
-  if (!sanityEnabled) return SEED_POSTS;
+  const [uploaded, settings] = await Promise.all([getCatalogPosts(), getSettings()]);
 
-  try {
-    const posts = await sanityFetch<Post[]>(ALL_POSTS_QUERY);
-    if (posts && posts.length > 0) return posts;
-  } catch (error) {
-    console.error("[gallery] Sanity fetch failed, serving the seed gallery:", error);
+  if (sanityEnabled) {
+    try {
+      const posts = await sanityFetch<Post[]>(ALL_POSTS_QUERY);
+      if (posts && posts.length > 0) return mergePosts(uploaded, posts);
+    } catch (error) {
+      console.error("[gallery] Sanity fetch failed, serving the seed gallery:", error);
+    }
   }
-  return SEED_POSTS;
+  return settings.showSeed ? mergePosts(uploaded, SEED_POSTS) : uploaded;
 });
 
 export async function getPosts(

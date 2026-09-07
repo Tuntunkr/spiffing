@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { clerkEnabled } from "@/lib/clerk";
 import Logo from "./Logo";
 import SubscribeForm from "./SubscribeForm";
 
@@ -47,28 +48,37 @@ export default function Header() {
             <span className="text-[14px] text-[#736f65]">Updated hourly</span>
           </div>
 
-          <SignedOut>
-            <div className="flex items-center gap-3">
-              <Link
-                className="focus-ring hidden text-[15px] text-[#736f65] transition-colors hover:text-[#16150f] sm:block"
-                href="/sign-in"
-              >
-                Sign in
-              </Link>
-              <Link
-                className="focus-ring rounded-full bg-[#16150f] px-4 py-[7px] text-[15px] font-medium text-[#faf9f7] transition-opacity hover:opacity-85"
-                href="/sign-up"
-              >
-                Join
-              </Link>
-            </div>
-          </SignedOut>
-
-          <SignedIn>
-            <UserButton
-              appearance={{ elements: { avatarBox: "size-[30px]" } }}
-            />
-          </SignedIn>
+          <Link
+            className="focus-ring hidden text-[15px] text-[#736f65] transition-colors hover:text-[#16150f] sm:block"
+            href="/admin"
+          >
+            Admin
+          </Link>
+          {clerkEnabled ? (
+            <>
+              <SignedOut>
+                <div className="flex items-center gap-3">
+                  <Link
+                    className="focus-ring hidden text-[15px] text-[#736f65] transition-colors hover:text-[#16150f] md:block"
+                    href="/sign-in"
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    className="focus-ring rounded-full bg-[#16150f] px-4 py-[7px] text-[15px] font-medium text-[#faf9f7] transition-opacity hover:opacity-85"
+                    href="/sign-up"
+                  >
+                    Join
+                  </Link>
+                </div>
+              </SignedOut>
+              <SignedIn>
+                <UserButton
+                  appearance={{ elements: { avatarBox: "size-[30px]" } }}
+                />
+              </SignedIn>
+            </>
+          ) : null}
         </div>
       </div>
     </header>
