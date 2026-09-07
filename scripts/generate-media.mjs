@@ -208,7 +208,7 @@ function printShot(w, h, p, r) {
   return o.join("\n");
 }
 
-function motionShot(w, h, p, r) {
+function motionShot(w, h, p) {
   const o = [rect(0, 0, w, h, p.bg)];
   const n = 5;
   const gap = w * 0.03;

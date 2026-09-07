@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { SORTS } from "@/lib/types";
+import { SORTS, type Sort } from "@/lib/types";
+import { galleryHref, type GalleryQuery } from "@/lib/gallery-url";
 
-export default function SortDropdown({ active, sort }: { active: string; sort: string }) {
+export default function SortDropdown({ query }: { query: GalleryQuery }) {
+  const sort = query.sort;
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -22,13 +24,7 @@ export default function SortDropdown({ active, sort }: { active: string; sort: s
     };
   }, [open]);
 
-  const href = (next: string) => {
-    const params = new URLSearchParams();
-    if (active !== "All") params.set("category", active);
-    if (next !== "Latest") params.set("sort", next);
-    const qs = params.toString();
-    return qs ? `/?${qs}` : "/";
-  };
+  const href = (next: Sort) => galleryHref({ ...query, sort: next });
 
   return (
     <div ref={ref} className="relative shrink-0">

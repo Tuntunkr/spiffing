@@ -6,26 +6,36 @@
     "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "check": "npm run typecheck && npm run lint && npm run test",
     "seed:media": "node scripts/generate-media.mjs",
     "dev:turbo": "next dev"
   },
   "dependencies": {
-    "@clerk/nextjs": "^7.8.3",
     "@sanity/image-url": "^2.1.1",
     "@sanity/vision": "^6.11.0",
     "@sanity/webhook": "^4.0.4",
+    "@vercel/blob": "^2.8.0",
+    "image-size": "^2.0.2",
     "next": "^16.3.3",
     "next-sanity": "^13.3.3",
     "react": "^19.2.8",
     "react-dom": "^19.2.8"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4.1.13",
     "@types/node": "^22.15.0",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.3.4",
     "tailwindcss": "^4.1.13",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "vitest": "^5.0.0"
   }
 }

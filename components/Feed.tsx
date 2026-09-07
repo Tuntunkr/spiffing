@@ -1,23 +1,24 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import PostCard from "./PostCard";
+import EmptyShelf from "./EmptyShelf";
+import { galleryHref, type GalleryQuery } from "@/lib/gallery-url";
 import type { Post } from "@/lib/types";
 
 const PAGE = 16;
 /** Must match `grid-auto-rows` on .feed-grid in globals.css. */
 const ROW_UNIT = 4;
 
-export default function Feed({ posts }: { posts: Post[] }) {
+export default function Feed({ posts, query }: { posts: Post[]; query: GalleryQuery }) {
   const [count, setCount] = useState(Math.min(PAGE, posts.length));
   const gridRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const lastWidthRef = useRef(0);
 
-  // A new filter/sort gives a fresh list — start the page counter over.
-  useEffect(() => {
-    setCount(Math.min(PAGE, posts.length));
-  }, [posts]);
+  // A new filter/sort/search remounts the feed (keyed by the parent), so the
+  // page counter starts over without an effect.
 
   /*
    * Each article spans as many rows as its rendered card is tall, plus the
@@ -109,10 +110,25 @@ export default function Feed({ posts }: { posts: Post[] }) {
   }, [count, posts.length]);
 
   if (posts.length === 0) {
+    const filtered = query.q || query.category !== "All";
     return (
-      <p className="py-28 text-center text-[15px] text-[#736f65]">
-        Nothing on this shelf yet.
-      </p>
+      <EmptyShelf
+        title={filtered ? "Nothing on this shelf" : "The archive is empty"}
+        body={
+          filtered
+            ? "Try a broader search, or another category."
+            : "Pieces published from the desk appear here, newest first."
+        }
+      >
+        {filtered ? (
+          <Link
+            href={galleryHref({ sort: query.sort })}
+            className="focus-ring inline-flex h-10 items-center rounded-full border border-[#e7e3da] bg-white px-4 text-[14px] font-medium text-[#16150f] transition-colors hover:border-[#d5cfc2]"
+          >
+            Show everything
+          </Link>
+        ) : null}
+      </EmptyShelf>
     );
   }
 

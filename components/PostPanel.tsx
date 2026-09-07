@@ -3,15 +3,16 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import SubscribeForm from "./SubscribeForm";
+import ShareButton from "./ShareButton";
+import { galleryHref } from "@/lib/gallery-url";
 import type { Post } from "@/lib/types";
 
 const CTRL =
   "focus-ring flex size-9 items-center justify-center rounded-full border border-[#e7e3da] bg-white text-[#736f65] transition-colors hover:border-[#d5cfc2] hover:text-[#16150f]";
 
-type Props = { post: Post; prevId?: string; nextId?: string };
+type Props = { post: Post; prevId?: string; nextId?: string; related: Post[] };
 
-export default function PostPanel({ post, prevId, nextId }: Props) {
+export default function PostPanel({ post, prevId, nextId, related }: Props) {
   const router = useRouter();
 
   // Arrow keys page through the archive; Escape returns to the gallery.
@@ -24,6 +25,13 @@ export default function PostPanel({ post, prevId, nextId }: Props) {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [router, prevId, nextId]);
+
+  const added = new Date(post.publishedAt).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  });
 
   return (
     <aside className="flex w-full flex-col border-t border-[#e7e3da] bg-[#faf9f7] lg:min-h-full lg:w-[clamp(360px,30vw,480px)] lg:shrink-0 lg:border-l lg:border-t-0">
@@ -57,12 +65,20 @@ export default function PostPanel({ post, prevId, nextId }: Props) {
         </nav>
 
         <div className="mt-8">
-          <Link
-            href={`/?category=${encodeURIComponent(post.category)}`}
-            className="focus-ring inline-flex h-7 items-center rounded-full border border-[#e7e3da] bg-white px-3 text-[13px] text-[#736f65] transition-colors hover:border-[#d5cfc2] hover:text-[#16150f]"
-          >
-            {post.category}
-          </Link>
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href={galleryHref({ category: post.category })}
+              className="focus-ring inline-flex h-7 items-center rounded-full border border-[#e7e3da] bg-white px-3 text-[13px] text-[#736f65] transition-colors hover:border-[#d5cfc2] hover:text-[#16150f]"
+            >
+              {post.category}
+            </Link>
+            {post.featured ? (
+              <span className="inline-flex h-7 items-center gap-1.5 rounded-full bg-[#16150f] px-3 text-[12px] font-medium text-white">
+                <span aria-hidden="true" className="size-[5px] rounded-full bg-[#c2452c]" />
+                Featured
+              </span>
+            ) : null}
+          </div>
 
           <h1 className="display mt-5 text-[24px] font-semibold leading-[1.15] xl:text-[27px]">
             {post.title}
@@ -88,39 +104,81 @@ export default function PostPanel({ post, prevId, nextId }: Props) {
             <div className="flex items-center justify-between gap-4 border-b border-[#e7e3da] py-3">
               <dt className="text-[#a8a396]">Added</dt>
               <dd className="text-[#16150f]">
-                {new Date(post.publishedAt).toLocaleDateString("en-GB", {
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                  timeZone: "UTC",
-                })}
+                <time dateTime={post.publishedAt}>{added}</time>
               </dd>
             </div>
+            {post.slides > 1 ? (
+              <div className="flex items-center justify-between gap-4 border-b border-[#e7e3da] py-3">
+                <dt className="text-[#a8a396]">Frames</dt>
+                <dd className="text-[#16150f] tabular-nums">{post.slides}</dd>
+              </div>
+            ) : null}
             <div className="flex items-center justify-between gap-4 border-b border-[#e7e3da] py-3">
-              <dt className="text-[#a8a396]">Frames</dt>
-              <dd className="text-[#16150f] tabular-nums">{post.slides}</dd>
+              <dt className="text-[#a8a396]">Size</dt>
+              <dd className="text-[#16150f] tabular-nums">
+                {post.media.width} × {post.media.height}
+              </dd>
             </div>
           </dl>
 
-          <a
-            href={post.sourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="focus-ring mt-7 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#16150f] px-4 text-[15px] font-medium text-white transition-colors hover:bg-black"
-          >
-            View the original
-            <svg width="13" height="13" viewBox="0 0 13 13" aria-hidden="true">
-              <path d="M4 1h8v8M12 1L1 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-            </svg>
-          </a>
+          <div className="mt-7 flex flex-col gap-3">
+            {post.sourceUrl ? (
+              <a
+                href={post.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="focus-ring inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#16150f] px-4 text-[15px] font-medium text-white transition-colors hover:bg-black"
+              >
+                View the original
+                <svg width="13" height="13" viewBox="0 0 13 13" aria-hidden="true">
+                  <path d="M4 1h8v8M12 1L1 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                </svg>
+              </a>
+            ) : null}
+            <div className="flex items-center gap-2">
+              <ShareButton title={post.title} />
+              <span className="hidden text-[12px] text-[#a8a396] sm:inline">
+                ← → to browse · Esc to close
+              </span>
+            </div>
+          </div>
         </div>
 
-        <div className="mt-auto pt-12">
-          <SubscribeForm variant="panel" />
-          <p className="mt-3 text-center text-[13px] text-[#a8a396]">
-            One email a week. Nothing else.
-          </p>
-        </div>
+        {related.length > 0 ? (
+          <div className="mt-auto pt-12">
+            <div className="flex items-baseline justify-between">
+              <h2 className="text-[12px] uppercase tracking-[0.12em] text-[#a8a396]">
+                More in {post.category}
+              </h2>
+              <Link
+                href={galleryHref({ category: post.category })}
+                className="focus-ring text-[13px] text-[#736f65] hover:text-[#16150f]"
+              >
+                See all
+              </Link>
+            </div>
+            <ul className="mt-4 grid grid-cols-3 gap-3">
+              {related.map((p) => (
+                <li key={p.id}>
+                  <Link
+                    href={`/posts/${p.id}`}
+                    className="focus-ring group relative block aspect-[4/5] overflow-hidden rounded-lg bg-[#f1efe9] ring-1 ring-inset ring-black/[0.06]"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={p.media.src}
+                      alt={p.title}
+                      width={p.media.width}
+                      height={p.media.height}
+                      loading="lazy"
+                      className="absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
+                    />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
       </div>
     </aside>
   );

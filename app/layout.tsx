@@ -1,6 +1,6 @@
-import type { Metadata } from "next";
-import { ClerkProvider } from "@clerk/nextjs";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { SITE_DESCRIPTION, SITE_NAME, siteUrl } from "@/lib/site";
 import "./globals.css";
 
 const inter = Inter({
@@ -9,14 +9,25 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
-const TITLE = "Vitrine";
-const DESCRIPTION =
-  "A working archive of interface, brand and print design — collected weekly, kept small on purpose.";
-
 export const metadata: Metadata = {
-  title: { default: TITLE, template: "%s — Vitrine" },
-  description: DESCRIPTION,
-  openGraph: { title: TITLE, description: DESCRIPTION, type: "website" },
+  metadataBase: siteUrl(),
+  title: { default: SITE_NAME, template: `%s — ${SITE_NAME}` },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  openGraph: {
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+    type: "website",
+    siteName: SITE_NAME,
+  },
+  twitter: { card: "summary_large_image", title: SITE_NAME, description: SITE_DESCRIPTION },
+  robots: { index: true, follow: true },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#faf9f7",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
@@ -24,9 +35,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={inter.variable}>
-      <body className="font-sans antialiased">
-        <ClerkProvider>{children}</ClerkProvider>
-      </body>
+      <body className="font-sans antialiased">{children}</body>
     </html>
   );
 }
