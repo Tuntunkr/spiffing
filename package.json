@@ -1,5 +1,5 @@
 {
-  "name": "inspora-clone",
+  "name": "spiffing",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -16,10 +16,13 @@
     "dev:turbo": "next dev"
   },
   "dependencies": {
+    "@next/third-parties": "^16.3.4",
     "@sanity/image-url": "^2.1.1",
     "@sanity/vision": "^6.11.0",
     "@sanity/webhook": "^4.0.4",
+    "@vercel/analytics": "^2.0.1",
     "@vercel/blob": "^2.8.0",
+    "@vercel/speed-insights": "^2.0.0",
     "image-size": "^2.0.2",
     "next": "^16.3.3",
     "next-sanity": "^13.3.3",

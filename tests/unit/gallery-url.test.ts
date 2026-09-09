@@ -1,5 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { galleryHref, MAX_QUERY, parseGalleryQuery } from "@/lib/gallery-url";
+import {
+  galleryHref,
+  galleryRedirectTarget,
+  isIndexableGallery,
+  isIndexableShelf,
+  MAX_QUERY,
+  parseGalleryHref,
+  parseGalleryQuery,
+  parseShelf,
+  shelfPath,
+} from "@/lib/gallery-url";
 
 describe("parseGalleryQuery", () => {
   it("defaults everything", () => {
@@ -30,13 +40,56 @@ describe("galleryHref", () => {
   it("omits defaults", () => {
     expect(galleryHref({ category: "All", sort: "Latest", q: "" })).toBe("/");
   });
-  it("encodes what is set", () => {
-    expect(galleryHref({ category: "3D", sort: "Featured", q: "a b" })).toBe("/?category=3D&sort=Featured&q=a+b");
+  it("uses clean shelf paths", () => {
+    expect(galleryHref({ category: "Web" })).toBe("/web");
+    expect(galleryHref({ category: "3D" })).toBe("/3d");
+    expect(galleryHref({ sort: "Featured" })).toBe("/featured");
+    expect(galleryHref({ category: "3D", sort: "Featured", q: "a b" })).toBe("/3d?sort=Featured&q=a+b");
   });
-  it("round-trips with parseGalleryQuery", () => {
+  it("round-trips with parseGalleryHref", () => {
     const query = { category: "Motion", sort: "Featured" as const, q: "loop" };
-    const href = galleryHref(query);
-    const sp = Object.fromEntries(new URL(href, "http://x").searchParams);
-    expect(parseGalleryQuery(sp)).toEqual(query);
+    expect(parseGalleryHref(galleryHref(query))).toEqual(query);
+  });
+});
+
+describe("galleryRedirectTarget", () => {
+  it("moves leftover query shelves in one hop and keeps search", () => {
+    expect(galleryRedirectTarget("/", "?category=Web")).toBe("/web");
+    expect(galleryRedirectTarget("/", "?category=Web&q=ledger")).toBe("/web?q=ledger");
+    expect(galleryRedirectTarget("/", "?sort=Featured")).toBe("/featured");
+    expect(galleryRedirectTarget("/web", "?category=Print")).toBe("/print");
+    expect(galleryRedirectTarget("/featured", "?sort=Featured")).toBe("/featured");
+  });
+  it("leaves canonical and search URLs alone", () => {
+    expect(galleryRedirectTarget("/", "")).toBeNull();
+    expect(galleryRedirectTarget("/", "?q=dashboard")).toBeNull();
+    expect(galleryRedirectTarget("/web", "")).toBeNull();
+    expect(galleryRedirectTarget("/web", "?sort=Featured")).toBeNull();
+    expect(galleryRedirectTarget("/web", "?q=ledger")).toBeNull();
+  });
+});
+
+describe("parseShelf", () => {
+  it("maps known slugs", () => {
+    expect(parseShelf("web")).toEqual({ slug: "web", category: "Web", sort: "Latest" });
+    expect(parseShelf("featured")).toEqual({ slug: "featured", category: "All", sort: "Featured" });
+  });
+  it("rejects unknown slugs", () => {
+    expect(parseShelf("admin")).toBeNull();
+    expect(parseShelf("search")).toBeNull();
+  });
+});
+
+describe("indexability", () => {
+  it("indexes home and clean shelves only", () => {
+    expect(isIndexableGallery({ category: "All", sort: "Latest", q: "" })).toBe(true);
+    expect(isIndexableShelf({ category: "Web", sort: "Latest", q: "" })).toBe(true);
+    expect(isIndexableShelf({ category: "All", sort: "Featured", q: "" })).toBe(true);
+    expect(isIndexableShelf({ category: "Web", sort: "Latest", q: "dash" })).toBe(false);
+    expect(isIndexableShelf({ category: "Web", sort: "Featured", q: "" })).toBe(false);
+  });
+  it("builds the featured shelf path", () => {
+    expect(shelfPath("All", "Featured")).toBe("/featured");
+    expect(shelfPath("Web", "Latest")).toBe("/web");
   });
 });

@@ -7,7 +7,7 @@ import { afterAll, beforeEach } from "vitest";
  * Tests never touch Vercel Blob or the real data/ folder: the store is pointed
  * at a fresh temp directory before every test and the Blob token is blanked.
  */
-const root = mkdtempSync(path.join(os.tmpdir(), "vitrine-test-"));
+const root = mkdtempSync(path.join(os.tmpdir(), "spiffing-test-"));
 let n = 0;
 
 beforeEach(() => {

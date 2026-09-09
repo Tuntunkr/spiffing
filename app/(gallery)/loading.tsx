@@ -1,8 +1,7 @@
 import Logo from "@/components/Logo";
+import { SITE_NAME } from "@/lib/site";
 
-const SKELETON_RATIOS = ["4/5", "1/1", "3/4", "4/3", "4/5", "1/1", "3/4", "4/5", "1/1", "4/3", "3/4", "4/5"];
-
-/** Gallery skeleton: same masthead, chips and grid shape as the real page. */
+/** Gallery skeleton: same masthead, chips and card shape as the real page. */
 export default function Loading() {
   return (
     <main aria-busy="true" aria-label="Loading the gallery" className="min-h-[100dvh]">
@@ -10,16 +9,15 @@ export default function Loading() {
         <div className="mx-auto flex h-[68px] max-w-[1680px] items-center justify-between px-4 sm:px-6 xl:h-[76px] xl:px-8 min-[1700px]:px-12">
           <div className="flex items-center gap-2.5 text-[#16150f]">
             <Logo className="size-[26px]" />
-            <span className="display text-[17px] font-semibold">Vitrine</span>
+            <span className="display text-[17px] font-semibold">{SITE_NAME}</span>
           </div>
           <div className="hidden h-9 w-[420px] rounded-full bg-[#eeebe4] sm:block" />
           <div className="h-4 w-12 rounded bg-[#eeebe4]" />
         </div>
       </header>
 
-      <div className="mx-auto max-w-[1680px] px-4 pb-8 pt-10 sm:px-6 xl:px-8 min-[1700px]:px-12">
-        <div className="h-9 w-[min(420px,80%)] rounded-lg bg-[#eeebe4] sm:h-11" />
-        <div className="mt-5 h-4 w-[min(520px,90%)] rounded bg-[#eeebe4]" />
+      <div className="mx-auto max-w-[1680px] px-4 pt-6 sm:px-6 sm:pt-8 xl:px-8 min-[1700px]:px-12">
+        <div className="hero-case h-[min(420px,70vw)] rounded-[1.5rem] border border-[#e7e3da] sm:rounded-[1.75rem]" />
       </div>
 
       <div className="mx-auto flex max-w-[1680px] items-center gap-2 px-4 pb-6 sm:px-6 xl:px-8 min-[1700px]:px-12">
@@ -29,13 +27,24 @@ export default function Loading() {
       </div>
 
       <div className="mx-auto max-w-[1680px] px-4 pb-20 sm:px-6 xl:px-8 min-[1700px]:px-12">
-        <div className="grid grid-cols-2 gap-4 md:gap-5 lg:grid-cols-3 min-[1440px]:grid-cols-4">
-          {SKELETON_RATIOS.map((ratio, i) => (
+        <div className="feed-grid">
+          {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
-              className="skeleton rounded-xl bg-[#eeebe4]"
-              style={{ aspectRatio: ratio, animationDelay: `${i * 60}ms` }}
-            />
+              className="overflow-hidden rounded-xl bg-white ring-1 ring-[#e7e3da]"
+              style={{ animationDelay: `${i * 60}ms` }}
+            >
+              <div className="skeleton aspect-[3/2] bg-[#eeebe4]" />
+              <div className="space-y-3 p-5">
+                <div className="flex gap-2">
+                  <div className="h-[44px] w-[66px] rounded-md bg-[#eeebe4] sm:h-[52px] sm:w-[78px]" />
+                  <div className="h-[44px] w-[66px] rounded-md bg-[#eeebe4] sm:h-[52px] sm:w-[78px]" />
+                </div>
+                <div className="h-5 w-3/4 rounded bg-[#eeebe4]" />
+                <div className="h-8 w-full rounded bg-[#eeebe4]" />
+                <div className="h-3 w-1/2 rounded bg-[#eeebe4]" />
+              </div>
+            </div>
           ))}
         </div>
       </div>

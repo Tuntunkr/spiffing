@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import ShareButton from "./ShareButton";
 import { galleryHref } from "@/lib/gallery-url";
+import { pieceAlt } from "@/lib/seo";
 import type { Post } from "@/lib/types";
 
 const CTRL =
@@ -36,11 +37,22 @@ export default function PostPanel({ post, prevId, nextId, related }: Props) {
   return (
     <aside className="flex w-full flex-col border-t border-[#e7e3da] bg-[#faf9f7] lg:min-h-full lg:w-[clamp(360px,30vw,480px)] lg:shrink-0 lg:border-l lg:border-t-0">
       <div className="flex flex-1 flex-col px-5 py-5 sm:px-7 lg:px-7 lg:py-6 xl:px-9 min-[1700px]:px-11">
-        <nav aria-label="Post navigation" className="flex items-center justify-between">
-          <Link href="/" aria-label="Back to gallery" className={CTRL}>
-            <svg width="13" height="13" viewBox="0 0 13 13" aria-hidden="true">
-              <path d="M1 1l11 11M12 1L1 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+        <nav aria-label="Post navigation" className="flex items-center justify-between gap-3">
+          <Link
+            href="/"
+            className="focus-ring inline-flex h-9 items-center gap-1.5 rounded-full border border-[#e7e3da] bg-white pl-2.5 pr-3 text-[13px] font-medium text-[#16150f] transition-colors hover:border-[#d5cfc2]"
+          >
+            <svg width="15" height="12" viewBox="0 0 15 12" aria-hidden="true">
+              <path
+                d="M6 1L1 6l5 5M1 6h13"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                fill="none"
+              />
             </svg>
+            Gallery
           </Link>
           <div className="flex items-center gap-2">
             {prevId ? (
@@ -148,7 +160,7 @@ export default function PostPanel({ post, prevId, nextId, related }: Props) {
           <div className="mt-auto pt-12">
             <div className="flex items-baseline justify-between">
               <h2 className="text-[12px] uppercase tracking-[0.12em] text-[#a8a396]">
-                More in {post.category}
+                Related {post.category.toLowerCase()} design
               </h2>
               <Link
                 href={galleryHref({ category: post.category })}
@@ -157,7 +169,7 @@ export default function PostPanel({ post, prevId, nextId, related }: Props) {
                 See all
               </Link>
             </div>
-            <ul className="mt-4 grid grid-cols-3 gap-3">
+            <ul className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
               {related.map((p) => (
                 <li key={p.id}>
                   <Link
@@ -167,7 +179,7 @@ export default function PostPanel({ post, prevId, nextId, related }: Props) {
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={p.media.src}
-                      alt={p.title}
+                      alt={pieceAlt(p)}
                       width={p.media.width}
                       height={p.media.height}
                       loading="lazy"

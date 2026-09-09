@@ -10,7 +10,7 @@ export default defineConfig({
     fileParallelism: false,
     coverage: {
       provider: "v8",
-      include: ["lib/**/*.ts", "app/admin/**/*.ts"],
+      include: ["lib/**/*.ts", "app/admin/**/*.ts", "app/submit/**/*.ts"],
     },
   },
 });

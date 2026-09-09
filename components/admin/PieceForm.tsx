@@ -25,6 +25,7 @@ export default function PieceForm({ action, piece, defaultCategory }: Props) {
   const [preview, setPreview] = useState<Preview | null>(null);
   const [dragging, setDragging] = useState(false);
   const [descLen, setDescLen] = useState(piece?.description.length ?? 0);
+  const [conceptLen, setConceptLen] = useState(piece?.concept?.length ?? 0);
   const artworkRef = useRef<HTMLInputElement>(null);
 
   // Server errors win once they arrive; local ones show instantly on submit.
@@ -93,6 +94,7 @@ export default function PieceForm({ action, piece, defaultCategory }: Props) {
         const fields = validatePiece({
           title: str("title"),
           description: str("description"),
+          concept: str("concept"),
           category: str("category"),
           handle: str("handle"),
           sourceUrl: str("sourceUrl"),
@@ -115,7 +117,7 @@ export default function PieceForm({ action, piece, defaultCategory }: Props) {
       {piece ? <input type="hidden" name="id" value={piece.id} /> : null}
 
       <div className="space-y-6">
-        <fieldset className="space-y-5 rounded-2xl border border-[#e7e3da] bg-white p-5 sm:p-6">
+        <fieldset className="space-y-5 rounded-[1.25rem] border border-[#e7e3da] bg-white p-5 shadow-[0_12px_36px_-28px_rgba(22,21,15,0.4)] sm:p-6">
           <legend className="display px-1 text-[15px] font-semibold">On the shelf</legend>
 
           <div>
@@ -184,6 +186,35 @@ export default function PieceForm({ action, piece, defaultCategory }: Props) {
           </div>
 
           <div>
+            <label className={LABEL} htmlFor="concept">
+              Concept <span className="font-normal text-[#a8a396]">(optional)</span>
+              <span
+                className={`ml-2 font-normal tabular-nums ${conceptLen > LIMITS.concept ? "text-[#c2452c]" : "text-[#a8a396]"}`}
+              >
+                {conceptLen}/{LIMITS.concept}
+              </span>
+            </label>
+            <textarea
+              id="concept"
+              name="concept"
+              maxLength={LIMITS.concept}
+              rows={5}
+              defaultValue={piece?.concept}
+              onChange={(e) => setConceptLen(e.target.value.length)}
+              placeholder="The longer note shown in the dark band under the piece."
+              aria-invalid={errors.concept ? true : undefined}
+              aria-describedby={errors.concept ? "concept-error" : "concept-hint"}
+              className={`${errors.concept ? FIELD_ERROR : FIELD} resize-y leading-relaxed`}
+            />
+            <FieldError id="concept-error" message={errors.concept} />
+            {!errors.concept ? (
+              <p id="concept-hint" className={HINT}>
+                If you leave this empty, the description is used on the piece page.
+              </p>
+            ) : null}
+          </div>
+
+          <div>
             <label className={LABEL} htmlFor="sourceUrl">
               Original URL <span className="font-normal text-[#a8a396]">(optional)</span>
             </label>
@@ -205,7 +236,7 @@ export default function PieceForm({ action, piece, defaultCategory }: Props) {
           </div>
         </fieldset>
 
-        <fieldset className="space-y-5 rounded-2xl border border-[#e7e3da] bg-white p-5 sm:p-6">
+        <fieldset className="space-y-5 rounded-[1.25rem] border border-[#e7e3da] bg-white p-5 shadow-[0_12px_36px_-28px_rgba(22,21,15,0.4)] sm:p-6">
           <legend className="display px-1 text-[15px] font-semibold">Designer</legend>
           <div>
             <label className={LABEL} htmlFor="handle">
@@ -261,8 +292,8 @@ export default function PieceForm({ action, piece, defaultCategory }: Props) {
         </fieldset>
       </div>
 
-      <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
-        <fieldset className="space-y-4 rounded-2xl border border-[#e7e3da] bg-white p-5">
+      <aside className="space-y-6 lg:sticky lg:top-8 lg:self-start">
+        <fieldset className="space-y-4 rounded-[1.25rem] border border-[#e7e3da] bg-white p-5 shadow-[0_12px_36px_-28px_rgba(22,21,15,0.4)]">
           <legend className="display px-1 text-[15px] font-semibold">Artwork</legend>
           <label
             htmlFor="artwork"
@@ -314,13 +345,13 @@ export default function PieceForm({ action, piece, defaultCategory }: Props) {
           {!errors.artwork ? (
             <p id="artwork-hint" className={HINT}>
               {shownSize
-                ? `${shownSize.width} × ${shownSize.height}${preview ? ` · ${formatBytes(preview.bytes)}` : ""} — sets the masonry span.`
+                ? `${shownSize.width} × ${shownSize.height}${preview ? ` · ${formatBytes(preview.bytes)}` : ""} — listing preview crop.`
                 : "JPG, PNG, WebP or GIF, up to 8 MB."}
             </p>
           ) : null}
         </fieldset>
 
-        <fieldset className="space-y-4 rounded-2xl border border-[#e7e3da] bg-white p-5">
+        <fieldset className="space-y-4 rounded-[1.25rem] border border-[#e7e3da] bg-white p-5 shadow-[0_12px_36px_-28px_rgba(22,21,15,0.4)]">
           <legend className="display px-1 text-[15px] font-semibold">Listing</legend>
           <div>
             <label className={LABEL} htmlFor="slides">

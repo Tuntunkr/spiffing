@@ -1,6 +1,6 @@
 # Project summary
 
-**Vitrine** is a curated design archive: a public masonry gallery and a private desk for publishing pieces. One Next.js App Router app, Tailwind CSS, deployable on Vercel.
+**Spiffing** is a curated design archive: a public listing gallery and a private desk for publishing pieces. One Next.js App Router app, Tailwind CSS, deployable on Vercel.
 
 Live: [https://vitrine-fawn.vercel.app](https://vitrine-fawn.vercel.app)
 
@@ -8,7 +8,7 @@ Live: [https://vitrine-fawn.vercel.app](https://vitrine-fawn.vercel.app)
 
 - Not a multi-user CMS. One admin, signed in with env credentials (later a hashed password in settings).
 - Not Clerk. Public “Join / Sign in” was removed; visitors browse, the desk publishes.
-- Not a copy of inspora.design. Same *kind* of site (archive + masonry), own name, mark, palette and copy.
+- Not a copy of inspora.design. Same *kind* of site (archive + listing cards), own name, mark, palette and copy.
 
 ## Two surfaces
 
@@ -29,7 +29,7 @@ flowchart LR
 
 ## Content pipeline
 
-Uploads from the desk sit in front. Sanity is optional. The shipped seed archive only appears if Settings → show seed is on (default **off**).
+Uploads from the desk sit in front. Sanity is optional. The shipped seed archive appears unless Settings → show seed is turned off (default **on**, with at least two pieces in every category).
 
 ```mermaid
 flowchart TD
@@ -44,7 +44,7 @@ flowchart TD
 | Layer | Choice |
 | --- | --- |
 | App | Next.js 16 App Router, React 19 |
-| Style | Tailwind 4, Inter, paper palette |
+| Style | Tailwind 4, Inter + Montserrat, paper palette |
 | Auth | Signed httpOnly cookie, scrypt hash |
 | Data | `data/*.json` locally; private Vercel Blob in production |
 | Images | Public Blob URLs on Vercel; `/uploads/[name]` locally |

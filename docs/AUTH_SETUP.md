@@ -8,7 +8,7 @@ Only one account exists: the email in `ADMIN_EMAIL`. There is no public sign-up.
 2. `loginAdmin` (server action) validates email + password (client and server share [`lib/admin-validation.ts`](../lib/admin-validation.ts))
 3. Lockout check: email **and** hashed client IP, 5 failures → 15 minutes ([`lib/login-attempts.ts`](../lib/login-attempts.ts))
 4. `verifyCredentials`: stored `passwordHash` in settings, else the env password
-5. Set `vitrine_admin` cookie (httpOnly, sameSite=strict, secure in production, 7 days)
+5. Set `spiffing_admin` cookie (httpOnly, sameSite=strict, secure in production, 7 days)
 6. Redirect to `/admin`
 
 ```mermaid
@@ -28,7 +28,7 @@ sequenceDiagram
     S-->>A: Email or password is wrong
   else ok
     S->>C: read passwordHash
-    S->>A: Set-Cookie vitrine_admin
+    S->>A: Set-Cookie spiffing_admin
     S-->>A: redirect /admin
   end
 ```

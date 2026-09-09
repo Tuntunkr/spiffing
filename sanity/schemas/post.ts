@@ -34,6 +34,14 @@ export const post = defineType({
       validation: (r) => r.required().max(300),
     }),
     defineField({
+      name: "concept",
+      title: "Concept",
+      type: "text",
+      rows: 5,
+      description: "Longer note shown in the dark band under the piece. Falls back to description if empty.",
+      validation: (r) => r.max(800),
+    }),
+    defineField({
       name: "category",
       type: "string",
       options: { list: [...CATEGORIES] },

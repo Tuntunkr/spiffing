@@ -6,7 +6,7 @@ Shipped on production ([vitrine-fawn.vercel.app](https://vitrine-fawn.vercel.app
 
 | Area | Status |
 | --- | --- |
-| Public masonry gallery | Done — G1–G12 |
+| Public listing gallery | Done — G1–G14 |
 | Detail viewer + lightbox + share + related | Done — D1–D10 |
 | Desk login (cookie, scrypt, lockout, session version) | Done — A1–A4, A13 |
 | Publish / edit / delete with server image inspect | Done — A5–A11 |
@@ -16,7 +16,7 @@ Shipped on production ([vitrine-fawn.vercel.app](https://vitrine-fawn.vercel.app
 | Search `?q=` | Done |
 | RSS, sitemap, robots, OG, icon | Done |
 | Loading / error / 404 | Done |
-| Design system (paper palette, pills, Inter) | Done — see DESIGN_SYSTEM.md |
+| Design system (paper palette, pills, Inter + Montserrat) | Done — see DESIGN_SYSTEM.md |
 | Vitest + Playwright + GitHub Actions | Done |
 | Clerk / fake subscribe / dead social links | Removed |
 

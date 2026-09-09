@@ -24,7 +24,7 @@ export default function OpenGraphImage() {
         <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
           <svg width="52" height="52" viewBox="0 0 32 32">
             <rect x="2.6" y="2.6" width="26.8" height="26.8" rx="3" fill="none" stroke="#16150f" strokeWidth="3.2" />
-            <path d="M10 10.5h4.1l2 8 2-8H22l-4.2 13h-3.6L10 10.5Z" fill="#16150f" />
+            <path d="M11.1 9.15h9.8v3.05h-6.55v1.85h6.55v7.8H11.1v-3.05h6.55v-1.85H11.1z" fill="#16150f" />
           </svg>
           <span style={{ fontSize: 34, fontWeight: 600, letterSpacing: -0.8 }}>{SITE_NAME}</span>
         </div>

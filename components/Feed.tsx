@@ -1,71 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import PostCard from "./PostCard";
 import EmptyShelf from "./EmptyShelf";
 import { galleryHref, type GalleryQuery } from "@/lib/gallery-url";
 import type { Post } from "@/lib/types";
 
 const PAGE = 16;
-/** Must match `grid-auto-rows` on .feed-grid in globals.css. */
-const ROW_UNIT = 4;
 
 export default function Feed({ posts, query }: { posts: Post[]; query: GalleryQuery }) {
   const [count, setCount] = useState(Math.min(PAGE, posts.length));
-  const gridRef = useRef<HTMLDivElement>(null);
   const sentinelRef = useRef<HTMLDivElement>(null);
-  const lastWidthRef = useRef(0);
 
   // A new filter/sort/search remounts the feed (keyed by the parent), so the
   // page counter starts over without an effect.
-
-  /*
-   * Each article spans as many rows as its rendered card is tall, plus the
-   * gap. The <a> sizes itself from the inline aspect-ratio, so this works
-   * before any image has loaded — no layout shift as the gallery fills in.
-   */
-  const layout = useCallback(() => {
-    const grid = gridRef.current;
-    if (!grid) return;
-    // Row gap tracks the column gap, which is set per breakpoint in CSS.
-    const gap = parseFloat(getComputedStyle(grid).columnGap) || 16;
-    for (const child of Array.from(grid.children) as HTMLElement[]) {
-      const card = child.firstElementChild as HTMLElement | null;
-      if (!card) continue;
-      const h = card.getBoundingClientRect().height;
-      child.style.gridRowEnd = `span ${Math.ceil((h + gap) / ROW_UNIT)}`;
-    }
-  }, []);
-
-  useLayoutEffect(() => {
-    layout();
-  }, [layout, count, posts]);
-
-  /*
-   * Only width changes matter. Re-running on height would loop forever: the
-   * spans we write change the grid's height, which would retrigger the
-   * observer that wrote them.
-   */
-  useEffect(() => {
-    const grid = gridRef.current;
-    if (!grid) return;
-
-    const onWidthChange = () => {
-      const w = grid.clientWidth;
-      if (w === lastWidthRef.current) return;
-      lastWidthRef.current = w;
-      layout();
-    };
-
-    const ro = new ResizeObserver(onWidthChange);
-    ro.observe(grid);
-    window.addEventListener("resize", onWidthChange);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", onWidthChange);
-    };
-  }, [layout]);
 
   /*
    * Infinite scroll. IntersectionObserver is the cheap path, but it is
@@ -134,7 +83,7 @@ export default function Feed({ posts, query }: { posts: Post[]; query: GalleryQu
 
   return (
     <>
-      <div ref={gridRef} className="feed-grid">
+      <div className="feed-grid">
         {posts.slice(0, count).map((post, i) => (
           <article
             key={post.id}

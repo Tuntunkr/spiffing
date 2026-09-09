@@ -24,15 +24,16 @@ describe("local JSON store", () => {
 
 describe("settings", () => {
   it("parses loosely", () => {
-    expect(parseSettings(null)).toEqual({ showSeed: false });
-    expect(parseSettings({ showSeed: "true" })).toEqual({ showSeed: false, passwordHash: undefined });
+    expect(parseSettings(null)).toEqual({ showSeed: true });
+    expect(parseSettings({ showSeed: "true" })).toEqual({ showSeed: true, passwordHash: undefined });
     expect(parseSettings({ showSeed: true, passwordHash: 42 })).toEqual({ showSeed: true, passwordHash: undefined });
+    expect(parseSettings({ showSeed: false })).toEqual({ showSeed: false, passwordHash: undefined });
   });
   it("persists", async () => {
     // Outside a React render, `cache()` is a pass-through, so this reads the disk.
-    expect(await getSettings()).toEqual({ showSeed: false });
-    await saveSettings({ showSeed: true, passwordHash: "a:b" });
-    expect(await getSettings()).toEqual({ showSeed: true, passwordHash: "a:b" });
+    expect(await getSettings()).toEqual({ showSeed: true });
+    await saveSettings({ showSeed: false, passwordHash: "a:b" });
+    expect(await getSettings()).toEqual({ showSeed: false, passwordHash: "a:b" });
   });
 });
 
@@ -44,6 +45,7 @@ describe("catalog", () => {
         id: "one",
         title: "One",
         description: "d",
+        concept: "",
         category: "Web",
         creator: { handle: "h", avatar: "/a.png" },
         media: { src: "/uploads/one.png", width: 10, height: 20 },

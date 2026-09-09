@@ -28,9 +28,10 @@ export default async function EditPiecePage({ params }: Props) {
         <span aria-hidden="true"> / </span>
         Edit
       </p>
-      <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="display text-[28px] font-semibold leading-tight sm:text-[34px]">
+          <p className="text-[12px] uppercase tracking-[0.14em] text-[#a8a396]">Edit</p>
+          <h1 className="display mt-1.5 text-[30px] font-semibold leading-[1.05] sm:text-[36px]">
             {piece.title}
           </h1>
           <p className="mt-2 text-[14px] text-[#736f65]">

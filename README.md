@@ -1,6 +1,6 @@
-# Vitrine
+# Spiffing
 
-A curated design archive — interface, brand and print — with a public masonry gallery and a private desk.
+A curated design archive — interface, brand and print — with a public listing gallery and a private desk.
 
 Live: [https://vitrine-fawn.vercel.app](https://vitrine-fawn.vercel.app)
 
@@ -14,6 +14,7 @@ Live: [https://vitrine-fawn.vercel.app](https://vitrine-fawn.vercel.app)
 | All features + diagrams | [docs/FEATURES.md](./docs/FEATURES.md) |
 | Design tokens / UI rules | [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md) |
 | Test script | [docs/TESTING.md](./docs/TESTING.md) |
+| SEO setup | [SEO-SETUP.md](./SEO-SETUP.md) |
 
 ```bash
 cp .env.example .env.local   # ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_SESSION_SECRET
@@ -25,4 +26,4 @@ npm run test:e2e
 
 `npm run dev` uses webpack. Turbopack can segfault on `/posts/[id]` in this project.
 
-The layout began as a study of [inspora.design](https://www.inspora.design/). Vitrine is its own name, mark, palette and copy; nothing was taken from that site.
+The layout began as a study of [inspora.design](https://www.inspora.design/). Spiffing is its own name, mark, palette and copy; nothing was taken from that site.

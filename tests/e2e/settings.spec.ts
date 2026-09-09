@@ -8,25 +8,34 @@ test.describe("desk settings", () => {
   });
 
   test("seed toggle changes what the public gallery shows", async ({ page }) => {
-    await page.goto("/");
-    const emptyBefore = await page.getByText("The archive is empty").isVisible();
+    const restoreSeed = async () => {
+      await page.goto("/admin/settings");
+      await page.getByLabel(/Show the built-in seed archive/).check();
+      await page.getByRole("button", { name: "Save shelf" }).click();
+      await expect(notice(page)).toContainText("updated");
+    };
 
-    await page.goto("/admin/settings");
-    await page.getByLabel(/Show the built-in seed archive/).check();
-    await page.getByRole("button", { name: "Save shelf" }).click();
-    await expect(notice(page)).toContainText("updated");
+    try {
+      await page.goto("/");
+      await expect(page.getByText("The archive is empty")).toHaveCount(0);
+      await expect(page.locator(".feed-grid article").first()).toBeVisible();
 
-    await page.goto("/");
-    await expect(page.getByText("The archive is empty")).toHaveCount(0);
-    await expect(page.locator(".feed-grid article").first()).toBeVisible();
+      await page.goto("/admin/settings");
+      await page.getByLabel(/Show the built-in seed archive/).uncheck();
+      await page.getByRole("button", { name: "Save shelf" }).click();
+      await expect(notice(page)).toContainText("updated");
 
-    await page.goto("/admin/settings");
-    await page.getByLabel(/Show the built-in seed archive/).uncheck();
-    await page.getByRole("button", { name: "Save shelf" }).click();
-    await expect(notice(page)).toContainText("updated");
+      await page.goto("/");
+      await expect(page.getByRole("link", { name: "Ledger — pricing" })).toHaveCount(0);
 
-    await page.goto("/");
-    if (emptyBefore) await expect(page.getByText("The archive is empty")).toBeVisible();
+      await restoreSeed();
+
+      await page.goto("/");
+      await expect(page.getByText("The archive is empty")).toHaveCount(0);
+      await expect(page.locator(".feed-grid article").first()).toBeVisible();
+    } finally {
+      await restoreSeed().catch(() => undefined);
+    }
   });
 
   test("password change validates, applies, and invalidates other sessions", async ({ page, browser }) => {

@@ -11,7 +11,7 @@ import { defineConfig, devices } from "@playwright/test";
  */
 const PORT = Number(process.env.E2E_PORT ?? 3100);
 const baseURL = process.env.E2E_BASE_URL ?? `http://localhost:${PORT}`;
-const dataDir = mkdtempSync(path.join(os.tmpdir(), "vitrine-e2e-"));
+const dataDir = mkdtempSync(path.join(os.tmpdir(), "spiffing-e2e-"));
 
 /**
  * CI uses Playwright's bundled Chromium. Locally, default to the installed

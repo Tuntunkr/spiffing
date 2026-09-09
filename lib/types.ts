@@ -17,6 +17,8 @@ export type Post = {
   id: string;
   title: string;
   description: string;
+  /** Longer note shown in the dark CONCEPT band under the piece. */
+  concept: string;
   category: Category;
   creator: { handle: string; avatar: string };
   media: { src: string; width: number; height: number };

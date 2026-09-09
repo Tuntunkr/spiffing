@@ -20,7 +20,7 @@ flowchart TD
 ```
 
 1. `vercel link`
-2. `vercel blob create-store vitrine --access public --yes` (once)
+2. `vercel blob create-store spiffing --access public --yes` (once)
 3. Set `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET` for all environments (`vercel env add`)
 4. `vercel env pull .env.local --yes`
 5. `vercel --prod`

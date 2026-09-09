@@ -9,7 +9,7 @@ const scryptAsync = promisify(scrypt);
 
 export { EMAIL_RE, validateLoginFields };
 
-export const ADMIN_COOKIE = "vitrine_admin";
+export const ADMIN_COOKIE = "spiffing_admin";
 export const SESSION_MS = 60 * 60 * 24 * 7 * 1000;
 
 /**

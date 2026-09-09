@@ -1,22 +1,23 @@
+import { MARK_FRAME, MARK_S } from "@/lib/mark";
+
 /**
- * The Vitrine mark: a display case seen head on — an open frame with the
- * object it holds sitting inside it.
+ * The Spiffing mark: an open frame with a geometric S — sharp, tailored, small.
  */
 export default function Logo({ className = "" }: { className?: string }) {
   return (
     <span className={`block ${className}`} aria-hidden="true">
       <svg viewBox="0 0 32 32" className="block size-full" focusable="false">
         <rect
-          x="2.6"
-          y="2.6"
-          width="26.8"
-          height="26.8"
-          rx="3"
+          x={MARK_FRAME.x}
+          y={MARK_FRAME.y}
+          width={MARK_FRAME.width}
+          height={MARK_FRAME.height}
+          rx={MARK_FRAME.rx}
           fill="none"
           stroke="currentColor"
-          strokeWidth="3.2"
+          strokeWidth={MARK_FRAME.strokeWidth}
         />
-        <path d="M10 10.5h4.1l2 8 2-8H22l-4.2 13h-3.6L10 10.5Z" fill="currentColor" />
+        <path d={MARK_S} fill="currentColor" />
       </svg>
     </span>
   );

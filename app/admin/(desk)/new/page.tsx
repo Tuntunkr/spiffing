@@ -22,12 +22,13 @@ export default async function NewPiecePage({ searchParams }: Props) {
         <span aria-hidden="true"> / </span>
         New
       </p>
-      <h1 className="display mt-2 text-[28px] font-semibold leading-tight sm:text-[34px]">
+      <p className="mt-4 text-[12px] uppercase tracking-[0.14em] text-[#a8a396]">Publish</p>
+      <h1 className="display mt-1.5 text-[30px] font-semibold leading-[1.05] sm:text-[36px]">
         Add a piece
       </h1>
       <p className="mt-2 max-w-[48ch] text-[15px] leading-relaxed text-[#736f65]">
-        Category, title, artwork and designer — the same fields the gallery card
-        and detail panel already read.
+        Category, title, artwork and designer. The same fields the gallery card and detail panel
+        already read.
       </p>
       <div className="mt-8">
         <PieceForm action={createPiece} defaultCategory={preset} />
