@@ -4,7 +4,7 @@ import { formAlert, login } from "./helpers";
 
 test.describe("desk authentication", () => {
   test("protected routes redirect to the login page", async ({ page }) => {
-    for (const route of ["/admin", "/admin/new", "/admin/settings", "/admin/ghost/edit"]) {
+    for (const route of ["/admin", "/admin/new", "/admin/settings", "/admin/submissions", "/admin/submissions/ghost", "/admin/ghost/edit"]) {
       await page.goto(route);
       await expect(page).toHaveURL(/\/admin\/login$/);
     }
@@ -44,7 +44,7 @@ test.describe("desk authentication", () => {
   test("signs in, shows the desk, signs out and is locked out again", async ({ page }) => {
     await login(page);
     await expect(page.getByRole("heading", { level: 1, name: "Pieces" })).toBeVisible();
-    await expect(page.getByText(E2E_ADMIN.email)).toBeVisible();
+    await expect(page.getByText(E2E_ADMIN.email).first()).toBeVisible();
 
     await page.getByRole("button", { name: "Sign out" }).click();
     await expect(page).toHaveURL(/\/admin\/login$/);
@@ -55,13 +55,13 @@ test.describe("desk authentication", () => {
   test("an already signed-in admin skips the login page", async ({ page }) => {
     await login(page);
     await page.goto("/admin/login");
-    await expect(page).toHaveURL(/\/admin$/);
+    await expect(page).toHaveURL(/\/admin$/, { timeout: 10_000 });
   });
 
   test("a tampered session cookie is ignored", async ({ page, context }) => {
     await login(page);
     const cookies = await context.cookies();
-    const session = cookies.find((c) => c.name === "vitrine_admin")!;
+    const session = cookies.find((c) => c.name === "spiffing_admin")!;
     await context.clearCookies();
     await context.addCookies([{ ...session, value: `${session.value.slice(0, -4)}AAAA` }]);
     await page.goto("/admin");

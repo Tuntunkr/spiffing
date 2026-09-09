@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { galleryHref, MAX_QUERY, type GalleryQuery } from "@/lib/gallery-url";
+import { galleryHref, MAX_QUERY, shelfPath, type GalleryQuery } from "@/lib/gallery-url";
 
 /**
  * A plain GET form, so it works before hydration and the result is a normal
@@ -30,12 +30,13 @@ export default function SearchForm({ query, autoFocus }: { query: GalleryQuery; 
   return (
     <form
       role="search"
-      action="/"
+      action={shelfPath(query.category, query.sort === "Featured" && query.category === "All" ? "Featured" : "Latest")}
       method="get"
       className="flex w-full items-center gap-1 rounded-full border border-[#e7e3da] bg-white py-1 pl-3.5 pr-1 transition-colors focus-within:border-[#c9c3b6]"
     >
-      {query.category !== "All" ? <input type="hidden" name="category" value={query.category} /> : null}
-      {query.sort !== "Latest" ? <input type="hidden" name="sort" value={query.sort} /> : null}
+      {query.sort === "Featured" && query.category !== "All" ? (
+        <input type="hidden" name="sort" value="Featured" />
+      ) : null}
       <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true" className="shrink-0 text-[#a8a396]">
         <circle cx="6" cy="6" r="4.5" fill="none" stroke="currentColor" strokeWidth="1.5" />
         <path d="M9.5 9.5L13 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />

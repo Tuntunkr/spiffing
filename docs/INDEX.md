@@ -1,4 +1,4 @@
-# Vitrine documentation
+# Spiffing documentation
 
 This folder is the source of truth for what the product does, how it looks, and how to test it. When a feature changes, update the matching module file **and** the diagram in [FEATURES.md](./FEATURES.md).
 
@@ -16,6 +16,7 @@ This folder is the source of truth for what the product does, how it looks, and 
 | What a screen should look like | [VISUAL_GUIDE.md](./VISUAL_GUIDE.md) |
 | How to verify a change | [TESTING.md](./TESTING.md) |
 | What is already shipped | [IMPLEMENTATION.md](./IMPLEMENTATION.md) |
+| SEO | [SEO-AUDIT.md](../SEO-AUDIT.md) · [SEO-SETUP.md](../SEO-SETUP.md) · [SEO-CHECKLIST.md](../SEO-CHECKLIST.md) · [SEO-KEYWORD-MAP.md](../SEO-KEYWORD-MAP.md) · [REDIRECTS.md](../REDIRECTS.md) · [SEO-IMPLEMENTATION-REPORT.md](../SEO-IMPLEMENTATION-REPORT.md) |
 
 Same names as a typical project pack also exist as pointers: [COMPLETE_IMPLEMENTATION.md](./COMPLETE_IMPLEMENTATION.md), [IMPLEMENTATION_COMPLETE.md](./IMPLEMENTATION_COMPLETE.md).
 
@@ -23,7 +24,7 @@ Same names as a typical project pack also exist as pointers: [COMPLETE_IMPLEMENT
 
 | Module | File | Owns |
 | --- | --- | --- |
-| Public gallery | [GALLERY.md](./GALLERY.md) | Home, search, filters, masonry, detail, 404 |
+| Public gallery | [GALLERY.md](./GALLERY.md) | Home, search, filters, card grid, detail, guides, 404 |
 | Desk (admin) | [DESK.md](./DESK.md) | Login, catalog, piece form, settings |
 | Storage | [STORAGE.md](./STORAGE.md) | Local `data/`, Vercel Blob, uploads |
 | HTTP surface | [API_REFERENCE.md](./API_REFERENCE.md) | Routes, server actions, cookies |

@@ -14,7 +14,7 @@ Auth details: [AUTH_SETUP.md](./AUTH_SETUP.md).
 | `/admin/[id]/edit` | same | Edit / delete |
 | `/admin/settings` | same | Seed + password |
 
-`app/admin/(desk)/layout.tsx` is the shell (logo, nav, email, sign out). Login is **outside** that group so it has no desk chrome.
+`app/admin/(desk)/layout.tsx` is the shell: left rail on large screens (logo, nav, email, sign out), compact header + strip on phones. Login is **outside** that group so it has no desk chrome.
 
 ## Pieces table
 
@@ -33,6 +33,7 @@ Shared by new and edit. Client validates with `validatePiece`; server re-validat
 | Category | One of `CATEGORIES` |
 | Title | Required, ≤ 80 |
 | Description | Required, ≤ 300 |
+| Concept | Optional, ≤ 800; dark band under the piece (falls back to description) |
 | Original URL | Empty **or** `http(s):` |
 | Handle | Required, letters/numbers/`.` `_` `-`, `@` stripped |
 | Avatar | Optional raster |
@@ -58,9 +59,9 @@ Artwork is never trusted from the browser: `image-size` reads the header; declar
 
 ## Settings
 
-- **Seed archive** — `showSeed`. Off (default) = public gallery is only desk uploads.
+- **Seed archive** — `showSeed`. On (default) = public gallery includes the built-in sample work behind desk uploads. Off = only pieces you uploaded.
 - **Password** — see [AUTH_SETUP.md](./AUTH_SETUP.md). Form resets on success.
 
 ## Visual contract
 
-White fieldsets, shared `FIELD` / `LABEL` / `HINT` from `components/admin/form.tsx`. Active desk nav has an ink underline. Mobile gets a second nav strip under the header.
+Warm canvas `#f4f2ed`, white cards, shared `FIELD` / `LABEL` / `HINT` from `components/admin/form.tsx`. Active rail item is an ink pill. Mobile keeps a second nav strip under the header.

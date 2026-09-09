@@ -3,6 +3,7 @@ import Logo from "./Logo";
 import { CATEGORIES } from "@/lib/types";
 import { galleryHref } from "@/lib/gallery-url";
 import { getAllPosts } from "@/lib/posts";
+import { SITE_NAME } from "@/lib/site";
 
 const LINK =
   "focus-ring text-[14px] text-[#736f65] transition-colors hover:text-[#16150f]";
@@ -30,11 +31,11 @@ export default async function Footer() {
           <div className="max-w-[34ch]">
             <Link
               href="/"
-              aria-label="Vitrine home"
+              aria-label={`${SITE_NAME} home`}
               className="focus-ring inline-flex items-center gap-2.5 text-[#16150f]"
             >
               <Logo className="size-[24px]" />
-              <span className="display text-[17px] font-semibold">Vitrine</span>
+              <span className="display text-[17px] font-semibold">{SITE_NAME}</span>
             </Link>
             <p className="mt-4 text-[14px] leading-relaxed text-[#736f65]">
               A working archive of interface, brand and print design. Collected weekly,
@@ -88,9 +89,24 @@ export default async function Footer() {
             </li>
           </Column>
 
-          <Column title="Follow">
+          <Column title="Guide">
             <li>
-              <a href="/feed.xml" className={LINK} type="application/rss+xml">
+              <Link href="/what-is" className={LINK}>
+                What is this
+              </Link>
+            </li>
+            <li>
+              <Link href="/how-to-use" className={LINK}>
+                How to use
+              </Link>
+            </li>
+            <li>
+              <Link href="/submit" className={LINK}>
+                Submit a piece
+              </Link>
+            </li>
+            <li>
+              <a href="/feed.xml" className={LINK} type="application/rss+xml" data-track="rss_click">
                 RSS feed
               </a>
             </li>
@@ -99,17 +115,12 @@ export default async function Footer() {
                 Sitemap
               </Link>
             </li>
-            <li>
-              <Link href="/admin" className={LINK}>
-                Desk sign in
-              </Link>
-            </li>
           </Column>
         </div>
 
         <div className="mt-14 flex flex-col gap-3 border-t border-[#e7e3da] pt-6 text-[13px] text-[#a8a396] sm:flex-row sm:items-center sm:justify-between">
-          <p>© {year} Vitrine</p>
-          <p className="sm:text-right">Set in Inter · Built with Next.js · Artwork generated for this archive</p>
+          <p>© {year} {SITE_NAME}</p>
+          <p className="sm:text-right">Set in Montserrat and Inter · Built with Next.js · Artwork generated for this archive</p>
         </div>
       </div>
     </footer>

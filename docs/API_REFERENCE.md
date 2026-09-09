@@ -47,7 +47,7 @@ Piece FormData keys: `title`, `description`, `category`, `handle`, `sourceUrl`, 
 
 ## Cookie
 
-| Name | `vitrine_admin` |
+| Name | `spiffing_admin` |
 | --- | --- |
 | httpOnly | yes |
 | sameSite | strict |

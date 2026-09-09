@@ -15,7 +15,7 @@ export default function DeskError({
   }, [error]);
 
   return (
-    <main className="rounded-2xl border border-[#e7e3da] bg-white px-6 py-14 text-center">
+    <main className="rounded-[1.25rem] border border-[#e7e3da] bg-white px-6 py-16 text-center shadow-[0_16px_40px_-32px_rgba(22,21,15,0.4)]">
       <p className="text-[13px] uppercase tracking-[0.14em] text-[#a8a396]">Desk error</p>
       <h1 className="display mt-3 text-[22px] font-semibold">This page could not load.</h1>
       <p className="mx-auto mt-2 max-w-[44ch] text-[14px] leading-relaxed text-[#736f65]">

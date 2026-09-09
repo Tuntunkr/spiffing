@@ -5,6 +5,7 @@ import { getCatalogPosts, mergePosts } from "./catalog";
 import { getSettings } from "./settings";
 import { SEED_POSTS } from "./seed";
 import { sanityEnabled } from "@/sanity/env";
+import { pickRelated } from "./related";
 import { CATEGORIES, type Post, type Sort } from "./types";
 
 /**
@@ -37,7 +38,7 @@ export function searchPosts(posts: Post[], q: string): Post[] {
   const terms = q.toLowerCase().split(/\s+/).filter(Boolean);
   if (terms.length === 0) return posts;
   return posts.filter((p) => {
-    const haystack = `${p.title} ${p.description} ${p.creator.handle} ${p.category}`.toLowerCase();
+    const haystack = `${p.title} ${p.description} ${p.concept} ${p.creator.handle} ${p.category}`.toLowerCase();
     return terms.every((t) => haystack.includes(t));
   });
 }
@@ -79,10 +80,9 @@ export async function getNeighbours(id: string) {
   };
 }
 
-/** Same category, newest first, never the piece itself. */
-export async function getRelated(post: Post, limit = 3): Promise<Post[]> {
-  const all = await getPosts(post.category);
-  return all.filter((p) => p.id !== post.id).slice(0, limit);
+/** Same category, shared language, then same designer. Never the piece itself. */
+export async function getRelated(post: Post, limit = 6): Promise<Post[]> {
+  return pickRelated(post, await getAllPosts(), limit);
 }
 
 /** One pass over the gallery for every chip's count, including "All". */

@@ -88,6 +88,16 @@ const COPY: Record<Category, CategoryCopy> = {
   ],
 };
 
+const CONCEPT_CLOSE: Record<Category, string> = {
+  Web: "Built as a working interface, not a moodboard: type, spacing and the one decision that was left out are all visible at once.",
+  Product: "The interaction is the argument. Every control is sized for a thumb, and the quiet states are designed as carefully as the happy path.",
+  Branding: "The mark is only the start. Colour, type and the empty space around them have to hold at a stamp, a sign, and a 16-pixel favicon.",
+  Print: "Ink on stock, not a screen mock. Sequence, fold and the size it is actually held at did more work than any decorative rule.",
+  Motion: "The move has to survive as a still. Timing was tuned by eye first, then checked so it never loops in a way that draws attention to itself.",
+  Illustration: "Drawn to a grid so a set stays a set. The line does the talking; colour is used only where it changes the meaning.",
+  "3D": "Light, material and proportion held still so the form can be judged. Nothing in the frame exists to prove the renderer.",
+};
+
 const CREATORS = [
   "ada.reyes", "studioquiet", "n.oren", "makeshift", "fieldnotes",
   "aviformwork", "lumen", "type.and.grid", "northloop", "practical",
@@ -110,6 +120,7 @@ export const SEED_POSTS: Post[] = manifest.map((m, i) => {
     id: `v-${n}`,
     title: copy.title,
     description: copy.description,
+    concept: `${copy.description} ${CONCEPT_CLOSE[category]}`,
     category,
     creator: {
       handle: CREATORS[creatorIndex],

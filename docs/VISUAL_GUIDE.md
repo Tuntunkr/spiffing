@@ -18,20 +18,25 @@ Accent  ████  #c2452c    live / featured pip only
 
 ```
 ┌ sticky header 68/76px, paper/85 + blur ─────────────────────────────────┐
-│ [V] Vitrine    Gallery   Featured     ( search pieces…    / )    Admin │
+│ [S] Spiffing    Gallery   Featured     ( search pieces…    / )          │
 └─────────────────────────────────────────────────────────────────────────┘
-  Design worth keeping.                          (H1 .display)
-  A working archive of…                          (15px muted)
+  THE ARCHIVE · 60 pieces                        (eyebrow, live pip)
+  Design worth keeping.                          (H1, landing case)
+  A working archive of…                          (lede)
+  [How to use] [What is this]                    editorial still board right
 
-  [All 12] [Web 3] [Branding 2] …                    Sort Latest ▾
-  ┌────┐ ┌────┐ ┌────┐ ┌────┐
-  │img │ │img │ │img │ │img │   2 / 3 / 4 cols
-  │  o │ │  o │ │  o │ │  o │   o = avatar, bottom-left
-  └────┘ └────┘ └────┘ └────┘
-  footer: Vitrine  Browse  More  Follow (RSS, sitemap, desk)
+  [All 60] [Web 12] [Branding 6] …                   Sort Latest ▾
+  ┌──────────┐ ┌──────────┐ ┌──────────┐
+  │  cover   │ │  cover   │ │  cover   │   2 / 3 / 4 cols
+  │ [ ] [ ]  │ │ [ ] [ ]  │ │ [ ] [ ]  │   thumbs
+  │ Title    │ │ Title    │ │ Title    │   always visible
+  │ blurb    │ │ blurb    │ │ blurb    │
+  │ Web · @  │ │ Product  │ │ Print    │   category · handle
+  └──────────┘ └──────────┘ └──────────┘
+  footer: Spiffing  Browse  More  Follow (RSS, sitemap)
 ```
 
-Pass: chips are pills; active chip is ink/white; search is a pill; no “Join”; no fake X/Instagram; empty catalog shows the dashed case, not a blank grid.
+Pass: chips are pills; active chip is ink/white; search is a pill; no Admin link; no “Join”; no fake X/Instagram; empty catalog shows the dashed case, not a blank grid.
 
 ## Screen: Search
 
@@ -40,8 +45,9 @@ Eyebrow `SEARCH`, H1 like `2 pieces for “ledger”` or `Nothing matches`, “C
 ## Screen: Detail
 
 ```
-┌ canvas #f1efe9 ──────────────┬ panel 360–480px ─────────────┐
-│                              │  [x]              [←] [→]    │
+┌ sticky header: [S] Spiffing   Gallery   Featured   (search) ─────────────┐
+├ canvas #f1efe9 ──────────────┬ panel 360–480px ─────────────┤
+│                              │  [← Gallery]      [←] [→]    │
 │      artwork (click zoom)    │  (Product)  Featured         │
 │                              │  Title                       │
 │                              │  Description                 │
@@ -50,6 +56,8 @@ Eyebrow `SEARCH`, H1 like `2 pieces for “ledger”` or `Nothing matches`, “C
 │                              │  [ Share ]  ← → · Esc        │
 │                              │  MORE IN PRODUCT  See all    │
 └──────────────────────────────┴──────────────────────────────┘
+  CONCEPT
+  Longer note about the piece (dark ink band, paper type)
 ```
 
 Pass: no original button if URL empty; Frames row only if slides > 1; lightbox is near-black `#16150f/95`; mobile stacks canvas then panel.

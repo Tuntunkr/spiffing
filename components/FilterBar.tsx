@@ -18,7 +18,7 @@ export default async function FilterBar({ query }: { query: GalleryQuery }) {
   );
 
   return (
-    <div className="mx-auto flex max-w-[1680px] items-center gap-3 px-4 pb-6 sm:px-6 xl:px-8 min-[1700px]:px-12">
+    <div className="mx-auto flex max-w-[1680px] items-center gap-3 px-4 pb-6 pt-8 sm:px-6 xl:px-8 min-[1700px]:px-12">
       <nav
         aria-label="Filter by category"
         className="min-w-0 flex-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
@@ -30,6 +30,7 @@ export default async function FilterBar({ query }: { query: GalleryQuery }) {
               <Link
                 key={label}
                 href={galleryHref({ ...query, category: value })}
+                data-category={value}
                 aria-current={isActive ? "page" : undefined}
                 className={`${CHIP} ${isActive ? ACTIVE : IDLE}`}
               >

@@ -26,7 +26,7 @@ export default function Notice({ message, param }: { message: string; param: str
   return (
     <div
       role="status"
-      className="notice-enter mb-6 flex items-center justify-between gap-4 rounded-xl border border-[#d6e6d0] bg-[#eef6ea] px-4 py-3 text-[14px] text-[#2f5d28]"
+      className="notice-enter mb-6 flex items-center justify-between gap-4 rounded-2xl border border-[#d6e6d0] bg-[#eef6ea] px-4 py-3.5 text-[14px] text-[#2f5d28]"
     >
       <span className="flex items-center gap-2.5">
         <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">

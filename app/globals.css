@@ -9,6 +9,7 @@
   --color-accent: #c2452c;
 
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-montserrat), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
 :root {
@@ -28,9 +29,10 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Display type is set tighter than Inter's defaults, which run loose at size. */
+/* Montserrat for titles (Uiverse Design pairing). Tracking matches their 18px cards. */
 .display {
-  letter-spacing: -0.022em;
+  font-family: var(--font-display);
+  letter-spacing: -0.025em;
 }
 
 .focus-ring:focus-visible {
@@ -47,24 +49,19 @@ body {
 }
 
 /*
- * Masonry: a CSS grid of short rows. Each <article> is given an explicit
- * `grid-row-end: span N` from its measured height, so items pack tightly
- * while keeping DOM order (a column-count layout reads down each column).
- *
- * The row unit is 4px rather than 1px on purpose: a 1px unit needs several
- * thousand implicit tracks for a full gallery, which makes every style
- * recalculation expensive. At 4px the packing is visually identical.
+ * Equal-height product cards, not masonry. Each cell stretches so a short
+ * caption still lines up with its neighbours in the row.
  */
 .feed-grid {
   display: grid;
-  grid-auto-rows: var(--feed-row, 4px);
-  column-gap: 16px;
+  align-items: stretch;
+  gap: 16px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 @media (min-width: 768px) {
   .feed-grid {
-    column-gap: 20px;
+    gap: 20px;
   }
 }
 
@@ -135,5 +132,33 @@ body {
   *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/*
+ * Gallery landing case: paper grid + a quiet rust wash, so the masthead
+ * reads as a physical board rather than a blank H1.
+ */
+.hero-case {
+  background-color: #ffffff;
+  background-image:
+    radial-gradient(ellipse 70% 55% at 82% 12%, rgba(194, 69, 44, 0.07), transparent 58%),
+    linear-gradient(to right, rgba(22, 21, 15, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(22, 21, 15, 0.035) 1px, transparent 1px);
+  background-size: auto, 28px 28px, 28px 28px;
+}
+
+.hero-still {
+  animation: hero-still-in 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes hero-still-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }

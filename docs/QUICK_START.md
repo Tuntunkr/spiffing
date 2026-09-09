@@ -2,14 +2,14 @@
 
 ```bash
 git clone <this-repo>
-cd inspora-clone
+cd spiffing
 cp .env.example .env.local
 # Fill ADMIN_EMAIL, ADMIN_PASSWORD (>= 8 chars), ADMIN_SESSION_SECRET (>= 16 chars)
 npm install
 npm run dev          # http://localhost:3000
 ```
 
-Open `/` for the gallery (empty until you publish, unless you turn seed on). Open `/admin` for the desk.
+Open `/` for the gallery (seed work is on by default so every category tab has pieces). Type `/admin` in the address bar for the desk — there is no public Admin link.
 
 ```bash
 npm run check        # tsc + eslint + vitest

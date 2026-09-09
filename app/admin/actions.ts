@@ -28,6 +28,7 @@ function readFields(formData: FormData): PieceFields {
   return {
     title: readText(formData, "title"),
     description: readText(formData, "description"),
+    concept: readText(formData, "concept"),
     category: readText(formData, "category"),
     handle: readText(formData, "handle"),
     sourceUrl: readText(formData, "sourceUrl"),

@@ -26,12 +26,21 @@ export async function login(page: Page) {
 
 export async function publish(
   page: Page,
-  piece: { title: string; description: string; category: string; handle: string; sourceUrl?: string; featured?: boolean },
+  piece: {
+    title: string;
+    description: string;
+    concept?: string;
+    category: string;
+    handle: string;
+    sourceUrl?: string;
+    featured?: boolean;
+  },
 ): Promise<string> {
   await page.goto("/admin/new");
   await page.getByLabel("Category").selectOption(piece.category);
   await page.getByLabel("Title").fill(piece.title);
   await page.getByLabel("Description").fill(piece.description);
+  if (piece.concept !== undefined) await page.getByLabel(/^Concept/).fill(piece.concept);
   await page.getByLabel("Handle").fill(piece.handle);
   if (piece.sourceUrl !== undefined) await page.getByLabel(/Original URL/).fill(piece.sourceUrl);
   if (piece.featured) await page.getByLabel("Feature this piece").check();

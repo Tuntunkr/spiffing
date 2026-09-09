@@ -24,12 +24,12 @@ E2e uses a **throwaway** `DATA_DIR` and an empty `BLOB_READ_WRITE_TOKEN` so it c
 
 ## Manual gallery
 
-1. `/` — masthead, chips with counts, sort, footer RSS. **No** Join, **no** subscribe, **no** X/Instagram.
-2. Click Web → URL `?category=Web`, chip `aria-current=page`.
-3. Sort Featured → `sort=Featured` kept when changing chips.
+1. `/` — masthead, chips with counts, sort, footer RSS. **No** Admin link, **no** Join, **no** subscribe, **no** X/Instagram. Desk is `/admin` typed in the address bar.
+2. Click Web → URL `/web`, chip `aria-current=page`.
+3. Sort Featured on All → `/featured`. Featured inside Web → `/web?sort=Featured`.
 4. Search `zzzznothing` → “Nothing matches” + empty shelf.
 5. `/` focuses search on desktop.
-6. Open a piece — Esc closes, arrows move, click image opens lightbox, Esc does **not** leave the page while lightbox is open.
+6. Open a piece — header stays (logo / Gallery go home). Esc closes, arrows move, click image opens lightbox, Esc does **not** leave the page while lightbox is open. Scroll to the ink **Concept** band at the bottom.
 7. Piece without original URL has no “View the original”.
 8. `/posts/nope` → branded 404.
 9. `/feed.xml` is RSS; `/robots.txt` disallows `/admin`.
@@ -44,7 +44,7 @@ E2e uses a **throwaway** `DATA_DIR` and an empty `BLOB_READ_WRITE_TOKEN` so it c
 6. Drop a JPG — preview shows `W × H`. Publish → green notice, row in table, card on `/` with a **loaded** image (not a broken icon).
 7. Edit title, clear URL, save → detail updates, original button gone.
 8. Remove → confirm → gone from desk and gallery, detail 404s.
-9. Settings: turn seed on → sample work appears behind uploads; off → only uploads.
+9. Settings: seed is on by default; turn it off → only uploads; on again → sample work returns.
 10. Password change in one browser; a second browser already signed in must land on login.
 
 ## Visual pass

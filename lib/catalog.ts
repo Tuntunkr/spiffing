@@ -27,6 +27,7 @@ export function parseCatalog(raw: unknown): Post[] {
   if (!Array.isArray(raw)) return [];
   return raw.filter(isPost).map((p) => ({
     ...p,
+    concept: typeof p.concept === "string" ? p.concept : "",
     slides: typeof p.slides === "number" && p.slides > 0 ? Math.floor(p.slides) : 1,
     sourceUrl: typeof p.sourceUrl === "string" ? p.sourceUrl : "",
     featured: p.featured === true,

@@ -6,6 +6,7 @@ export const POST_PROJECTION = /* groq */ `{
   "id": slug.current,
   title,
   description,
+  "concept": coalesce(concept, ""),
   category,
   "creator": {
     "handle": coalesce(designer->handle, "unknown"),

@@ -72,7 +72,7 @@ describe("piece actions", () => {
     authed = true;
     revalidatePath.mockClear();
     cwd = process.cwd();
-    root = await fs.mkdtemp(path.join(os.tmpdir(), "vitrine-actions-"));
+    root = await fs.mkdtemp(path.join(os.tmpdir(), "spiffing-actions-"));
     process.chdir(root);
   });
   afterEach(async () => {
@@ -106,7 +106,10 @@ describe("piece actions", () => {
   });
 
   it("publishes, measuring the image itself", async () => {
-    await expectRedirect(createPiece({}, form({ ...base, artwork: artwork(), avatar: avatar() })), /^\/admin\?published=ledger-pricing$/);
+    await expectRedirect(
+      createPiece({}, form({ ...base, concept: "Forest-green panels, one lime accent.", artwork: artwork(), avatar: avatar() })),
+      /^\/admin\?published=ledger-pricing$/,
+    );
 
     const [piece] = await getCatalogPosts();
     expect(piece).toMatchObject({
@@ -117,6 +120,7 @@ describe("piece actions", () => {
       media: { width: 2, height: 1 },
       slides: 2,
       featured: true,
+      concept: "Forest-green panels, one lime accent.",
       sourceUrl: "https://example.com/ledger",
     });
     expect(piece.media.src).toMatch(/^\/uploads\/ledger-pricing-\d+\.jpg$/);

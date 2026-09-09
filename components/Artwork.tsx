@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ANALYTICS_EVENTS, track } from "@/lib/analytics";
+import { pieceAlt } from "@/lib/seo";
 import type { Post } from "@/lib/types";
 
 /**
@@ -33,14 +35,17 @@ export default function Artwork({ post }: { post: Post }) {
     <>
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          setOpen(true);
+          track(ANALYTICS_EVENTS.image_open, { piece_id: post.id, title: post.title });
+        }}
         aria-label={`View ${post.title} at full size`}
         className="focus-ring group block cursor-zoom-in rounded-xl"
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={post.media.src}
-          alt={post.title}
+          alt={pieceAlt(post)}
           width={post.media.width}
           height={post.media.height}
           fetchPriority="high"
@@ -59,7 +64,7 @@ export default function Artwork({ post }: { post: Post }) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={post.media.src}
-            alt={post.title}
+            alt={pieceAlt(post)}
             width={post.media.width}
             height={post.media.height}
             className="max-h-full max-w-full object-contain"

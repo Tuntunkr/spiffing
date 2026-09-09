@@ -58,6 +58,7 @@ export default function SortDropdown({ query }: { query: GalleryQuery }) {
               key={s}
               role="menuitem"
               href={href(s)}
+              data-filter={s}
               onClick={() => setOpen(false)}
               className={`focus-ring flex items-center justify-between rounded-lg px-3 py-2 text-[14px] transition-colors hover:bg-[#f4f2ee] ${
                 s === sort ? "text-[#16150f]" : "text-[#736f65]"

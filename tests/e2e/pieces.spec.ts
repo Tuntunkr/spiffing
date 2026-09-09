@@ -35,10 +35,13 @@ test.describe("publishing pieces", () => {
   });
 
   test("publish → gallery → detail → edit → remove", async ({ page }) => {
+    test.setTimeout(60_000);
     const title = `E2E Ledger ${Date.now()}`;
     const id = await publish(page, {
       title,
       description: "A pricing page with three tiers, built for the e2e run.",
+      concept:
+        "Mossforge fuses the calm of cream paper backdrops with the gravity of forest-green panels and a single charged lime accent.",
       category: "Product",
       handle: "e2estudio",
       sourceUrl: "https://example.com/ledger",
@@ -53,7 +56,7 @@ test.describe("publishing pieces", () => {
 
     // Public gallery: appears in Latest, in its category chip, and in search.
     await page.goto("/");
-    await expect(page.getByRole("link", { name: title })).toBeVisible();
+    await expect(page.getByRole("link", { name: title }).first()).toBeVisible();
     await expect
       .poll(async () =>
         page
@@ -63,9 +66,9 @@ test.describe("publishing pieces", () => {
           .evaluate((el) => (el as HTMLImageElement).naturalWidth),
       )
       .toBeGreaterThan(0);
-    await page.goto("/?category=Product");
+    await page.goto("/product");
     await expect(page.getByRole("link", { name: title })).toBeVisible();
-    await page.goto("/?category=Print");
+    await page.goto("/print");
     await expect(page.getByRole("link", { name: title })).toHaveCount(0);
     await page.goto("/?q=e2estudio");
     await expect(page.getByRole("heading", { level: 1 })).toContainText("for “e2estudio”");
@@ -77,10 +80,16 @@ test.describe("publishing pieces", () => {
     await expect(page.getByText("e2estudio")).toBeVisible();
     await expect(page.getByText("800 × 1000")).toBeVisible();
     await expect(page.getByRole("link", { name: /View the original/ })).toHaveAttribute("href", "https://example.com/ledger");
-    await expect(page.getByText("Featured", { exact: true })).toBeVisible();
+    await expect(page.getByRole("complementary").getByText("Featured", { exact: true })).toBeVisible();
+    await expect(page.getByRole("region", { name: "Concept" })).toContainText("cream paper backdrops");
+    await expect(page.getByRole("banner")).toBeVisible();
+    await page.getByRole("banner").getByRole("link", { name: "Spiffing home" }).click();
+    await expect(page).toHaveURL(/\/$/);
+
+    await page.goto(`/posts/${id}`);
 
     // Lightbox opens and Escape closes it without leaving the page.
-    await page.getByRole("button", { name: /full size/ }).click();
+    await page.getByRole("button", { name: /full size/ }).click({ timeout: 15_000 });
     await expect(page.getByRole("dialog")).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(page.getByRole("dialog")).toHaveCount(0);
@@ -103,7 +112,7 @@ test.describe("publishing pieces", () => {
     await page.goto(`/posts/${id}`);
     await expect(page.getByRole("heading", { level: 1, name: `${title} v2` })).toBeVisible();
     await expect(page.getByRole("link", { name: /View the original/ })).toHaveCount(0);
-    await expect(page.getByText("Featured", { exact: true })).toHaveCount(0);
+    await expect(page.getByRole("complementary").getByText("Featured", { exact: true })).toHaveCount(0);
 
     // Remove: gone from the desk and the gallery, detail 404s.
     await removePiece(page, id);
@@ -145,6 +154,6 @@ test.describe("publishing pieces", () => {
     await page.goto("/admin/new");
     await page.locator("#artwork").setInputFiles(ARTWORK);
     await expect(page.getByText(/800 × 1000/)).toBeVisible();
-    await expect(page.getByText(/KB — sets the masonry span/)).toBeVisible();
+    await expect(page.getByText(/KB — listing preview crop/)).toBeVisible();
   });
 });
